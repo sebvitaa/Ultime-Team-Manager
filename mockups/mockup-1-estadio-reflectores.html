@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup 1 · Estadio con reflectores</title>
+<style>
+  :root{
+    --verde:#00e676; --verde-2:#00c853; --oro:#f4c95d;
+    --bg:#05140d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg); color:#fff; overflow:hidden;
+    display:grid; place-items:center; min-height:100dvh;
+  }
+  .escena{position:fixed; inset:0; overflow:hidden; z-index:0}
+
+  /* Cielo/estadio de fondo */
+  .escena::before{
+    content:""; position:absolute; inset:0;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #0a3d2a 0%, #061c13 45%, #030b08 100%);
+  }
+  /* Gradas con puntitos (público) */
+  .gradas{
+    position:absolute; left:0; right:0; top:0; height:52%;
+    background-image:radial-gradient(rgba(255,255,255,.10) 1px, transparent 1.4px);
+    background-size:7px 7px; opacity:.5;
+    mask-image:linear-gradient(#000 0%, transparent 92%);
+  }
+  /* Césped en perspectiva */
+  .cesped{
+    position:absolute; left:-20%; right:-20%; bottom:-6%; height:60%;
+    transform:perspective(520px) rotateX(58deg);
+    transform-origin:bottom center;
+    background:
+      repeating-linear-gradient(90deg,#0b5d38 0 60px,#0e6b41 60px 120px);
+    box-shadow:0 -30px 80px rgba(0,230,118,.25) inset;
+  }
+  .cesped::after{ /* líneas del campo */
+    content:""; position:absolute; inset:0;
+    background:
+      linear-gradient(90deg,transparent 49.4%,rgba(255,255,255,.55) 49.7%,rgba(255,255,255,.55) 50.3%,transparent 50.6%),
+      radial-gradient(circle at 50% 100%, transparent 118px, rgba(255,255,255,.5) 120px, transparent 124px);
+  }
+  /* Reflectores que barren */
+  .haz{
+    position:absolute; top:-15%; width:60vmax; height:120vmax;
+    background:linear-gradient(180deg, rgba(255,255,255,.16), rgba(0,230,118,.05) 40%, transparent 70%);
+    filter:blur(6px); transform-origin:top center; mix-blend-mode:screen;
+  }
+  .haz.a{left:8%;  animation:barrer1 9s ease-in-out infinite}
+  .haz.b{right:6%; animation:barrer2 11s ease-in-out infinite}
+  .haz.c{left:44%; animation:barrer3 7s ease-in-out infinite}
+  @keyframes barrer1{0%,100%{transform:rotate(-16deg)}50%{transform:rotate(10deg)}}
+  @keyframes barrer2{0%,100%{transform:rotate(14deg)}50%{transform:rotate(-12deg)}}
+  @keyframes barrer3{0%,100%{transform:rotate(-6deg);opacity:.7}50%{transform:rotate(6deg);opacity:1}}
+
+  /* Destellos de flashes del público */
+  .flash{position:absolute; width:3px; height:3px; border-radius:50%; background:#fff;
+    box-shadow:0 0 8px 2px #fff; opacity:0; animation:flash 4s linear infinite}
+  @keyframes flash{0%,97%,100%{opacity:0}98%{opacity:1}}
+
+  /* Tarjeta de login */
+  .login{
+    position:relative; z-index:2; width:min(92vw,380px);
+    padding:34px 28px 26px;
+    background:rgba(8,20,14,.55);
+    border:1px solid rgba(0,230,118,.25);
+    border-radius:22px;
+    backdrop-filter:blur(14px) saturate(140%);
+    box-shadow:0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.03) inset;
+    animation:subir .7s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes subir{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+  .marca{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:22px}
+  .escudo{width:64px;height:64px;border-radius:18px;display:grid;place-items:center;
+    background:linear-gradient(145deg,var(--verde),var(--verde-2));
+    box-shadow:0 8px 24px rgba(0,230,118,.45); font-size:32px}
+  .titulo{font-weight:800;letter-spacing:3px;font-size:15px;text-transform:uppercase;
+    text-align:center;color:#eafff4}
+  .sub{font-size:11px;letter-spacing:2px;color:var(--verde);text-transform:uppercase;font-weight:700}
+  label{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+    color:#9fd8bd;margin:16px 0 6px}
+  .campo{display:flex;align-items:center;gap:10px;padding:12px 14px;
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);
+    border-radius:12px;transition:border-color .2s,background .2s}
+  .campo:focus-within{border-color:var(--verde);background:rgba(0,230,118,.08)}
+  .campo input{flex:1;border:0;background:transparent;color:#fff;font-size:15px;outline:0}
+  .campo input::placeholder{color:rgba(255,255,255,.35)}
+  .ojo{cursor:pointer;color:#9fd8bd;font-size:16px}
+  .btn{margin-top:24px;width:100%;padding:14px;border:0;border-radius:12px;cursor:pointer;
+    font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:14px;color:#04150d;
+    background:linear-gradient(145deg,var(--verde),var(--verde-2));
+    box-shadow:0 12px 28px rgba(0,230,118,.4);transition:transform .15s,box-shadow .15s}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(0,230,118,.55)}
+  .btn:active{transform:translateY(0)}
+  .demo{margin-top:16px;text-align:center;font-size:11px;letter-spacing:.5px;color:rgba(255,255,255,.4)}
+  .etq{position:fixed;top:14px;left:16px;z-index:3;font-size:11px;letter-spacing:2px;
+    text-transform:uppercase;color:rgba(255,255,255,.45);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="escena" id="escena">
+    <div class="gradas"></div>
+    <div class="haz a"></div><div class="haz b"></div><div class="haz c"></div>
+    <div class="cesped"></div>
+  </div>
+  <div class="etq">Mockup 1 — Estadio · reflectores</div>
+
+  <form class="login" onsubmit="return false">
+    <div class="marca">
+      <div class="escudo">⚽</div>
+      <div class="titulo">Ultime Team Manager</div>
+      <div class="sub">Inicia sesión</div>
+    </div>
+    <label>Correo</label>
+    <div class="campo"><span>📧</span><input type="email" placeholder="tu@correo.com"></div>
+    <label>Contraseña</label>
+    <div class="campo"><span>🔒</span><input id="p1" type="password" placeholder="••••••">
+      <span class="ojo" onclick="t('p1')">👁</span></div>
+    <button class="btn">Entrar</button>
+    <div class="demo">Demo: demo@ultime.com / 123456</div>
+  </form>
+
+<script>
+  function t(id){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password'}
+  // flashes aleatorios en las gradas
+  const esc=document.getElementById('escena');
+  for(let k=0;k<40;k++){const f=document.createElement('div');f.className='flash';
+    f.style.left=(Math.random()*100)+'%';f.style.top=(Math.random()*45)+'%';
+    f.style.animationDelay=(Math.random()*4)+'s';esc.appendChild(f);}
+</script>
+</body>
+</html>
