@@ -1,2 +1,5 @@
-- [ ] [PROJ] **Funcionalidades plantilla** El jugador tiene un una banca, por lo que al hacer click en un jugador se desplegará, desde abajo, un menú. El menú esta estructurado con el jugador actual en la parte superior, con la banca para dicha posición abajo. Se puede ver un foto del jugador a la izquierda, el nombre y a la derecha el puntaje del jugador
-- [ ] [FE] **Tarjetas en cancha** El nombre y el apellido tienen que estar en 2 líneas centradas, para evitar que no sea posible ver el nombre completo. 
+- [ ] [PROJ] **Funcionalidades mercado** el mercado tiene que permitir comprar y vender jugadores. Esto incluye la búsqueda de jugadores y un dropdown de posición de jugadores.  Además la selección de si se quiere ordenar por puntaje (mayor a menor o menor a mayor), por precio (ídem) o por órden alfabético. Debajo de esto seleccionar 1 de dos opciones: Vender o Comprar. Si uno presiona comprar se ve el mercado, si selecicona vender se ve el equipo propio. No se pueden vender jugadores que el jugador tenga de titulares (Ya seleccionados en su equipo). Se debe ver un menú con la foto del jugador, el nombre, la posición, el puntaje y a la mano derecha el precio.
+- [ ] [PROJ] **Jugadores** Si un jugador es comprado, ahora se agrega a los jugadores del jugador y se eliminan las monedas. Si se vende, se elimina de los jugadores del jugador, se agregan las monedas y se agrega al mercado.
+
+## FUENTE API
+https://www.api-football.com/documentation-v3#section/Authentication/API-SPORTS-Account

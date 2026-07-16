@@ -45,3 +45,6 @@ app.*.map.json
 /android/app/release
 # Added by code-review-graph
 .code-review-graph/
+
+# Secretos (clave de API-Football) — nunca commitear
+.env

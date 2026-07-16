@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:contador_app/domain/entities/player.dart';
+import 'package:contador_app/domain/entities/squad.dart';
 import 'package:contador_app/domain/repositories/squad_repository.dart';
 import 'package:contador_app/data/repositories/squad_repository_local.dart';
 
@@ -30,9 +31,11 @@ class SquadState {
     return sum / players.length;
   }
 
-  // Suplentes disponibles para la misma posición que [player].
+  // Suplentes disponibles para la misma LÍNEA que [player] (def/med/del/por):
+  // los comprados en el mercado traen solo su línea, así cualquier defensa
+  // puede cubrir cualquier puesto de la defensa, etc.
   List<Player> benchFor(Player player) =>
-      bench.where((b) => b.position == player.position).toList();
+      bench.where((b) => b.position.group == player.position.group).toList();
 
   SquadState copyWith({
     List<Player>? players,
@@ -79,13 +82,39 @@ class SquadController extends Notifier<SquadState> {
   }
 
   // Manda a la banca al titular y sube al suplente elegido a su lugar.
+  // El suplente hereda el puesto EXACTO del titular (ej: un central que
+  // reemplaza al lateral izquierdo pasa a jugar de LI) para que el 4-3-3
+  // siga completo en la cancha.
   void swapWithBench(Player starter, Player substitute) {
+    final promoted = substitute.copyWith(position: starter.position);
     final players = [
-      for (final p in state.players) p.id == starter.id ? substitute : p,
+      for (final p in state.players) p.id == starter.id ? promoted : p,
     ];
     final bench = [
       for (final b in state.bench) b.id == substitute.id ? starter : b,
     ];
     state = state.copyWith(players: players, bench: bench);
+    _persist();
   }
+
+  // Agrega un jugador comprado en el mercado a la banca.
+  void addToBench(Player player) {
+    if (state.bench.any((b) => b.id == player.id) ||
+        state.players.any((p) => p.id == player.id)) {
+      return; // ya es parte del club
+    }
+    state = state.copyWith(bench: [...state.bench, player]);
+    _persist();
+  }
+
+  // Quita de la banca un jugador vendido en el mercado.
+  void removeFromBench(Player player) {
+    state = state.copyWith(
+      bench: state.bench.where((b) => b.id != player.id).toList(),
+    );
+    _persist();
+  }
+
+  void _persist() =>
+      _repo.saveSquad(Squad(starters: state.players, bench: state.bench));
 }
