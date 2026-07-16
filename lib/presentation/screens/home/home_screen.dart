@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:contador_app/presentation/providers/auth_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -21,7 +22,18 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       body: Center(
-        child: Text('¡Bienvenido, ${user?.email ?? 'jugador'}!'),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('¡Bienvenido, ${user?.email ?? 'jugador'}!'),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () => context.push('/squad'),
+              icon: const Icon(Icons.groups),
+              label: const Text('Ver mi plantilla'),
+            ),
+          ],
+        ),
       ),
     );
   }
