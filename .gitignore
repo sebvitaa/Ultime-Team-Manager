@@ -11,6 +11,8 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+TODO.md
+
 
 # IntelliJ related
 *.iml
@@ -43,6 +45,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
 # Added by code-review-graph
 .code-review-graph/
 
