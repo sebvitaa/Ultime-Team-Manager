@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:contador_app/presentation/screens/counter/counter_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:contador_app/config/router/app_router.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(const ProviderScope(child: MyApp()));
 
-class MyApp extends StatelessWidget {
+// Ahora es ConsumerWidget para poder leer el routerProvider.
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp( 
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
-      home: const CounterScreen(),
+      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.green),
+      routerConfig: router,
     );
   }
 }

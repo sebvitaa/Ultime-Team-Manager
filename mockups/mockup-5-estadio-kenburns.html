@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup 5 · Estadio Ken Burns + glass</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#fff;
+    overflow:hidden;display:grid;place-items:center;min-height:100dvh;background:#000}
+
+  /* "Foto" de estadio construida con capas CSS, con zoom/paneo lento (Ken Burns) */
+  .foto{position:fixed;inset:-8%;z-index:0;animation:kenburns 24s ease-in-out infinite alternate;
+    background:
+      /* focos superiores */
+      radial-gradient(6px 6px at 15% 8%, #fff,transparent 60%),
+      radial-gradient(6px 6px at 30% 6%, #fff,transparent 60%),
+      radial-gradient(6px 6px at 70% 6%, #fff,transparent 60%),
+      radial-gradient(6px 6px at 85% 8%, #fff,transparent 60%),
+      /* halos de los focos */
+      radial-gradient(40% 30% at 22% 6%, rgba(255,255,255,.18),transparent 70%),
+      radial-gradient(40% 30% at 78% 6%, rgba(255,255,255,.18),transparent 70%),
+      /* gradas */
+      linear-gradient(180deg,#0e1726 0%,#132033 30%,#0c1a12 46%),
+      /* césped iluminado */
+      radial-gradient(120% 70% at 50% 100%, #1f7a45 0%, #14602f 40%, #0a3b1d 70%, #06240f 100%);
+    background-repeat:no-repeat}
+  /* textura de público sobre las gradas */
+  .publico{position:fixed;inset:-8%;z-index:1;top:0;height:46%;
+    background-image:radial-gradient(rgba(255,255,255,.14) 1px,transparent 1.3px);
+    background-size:6px 6px;opacity:.6;animation:kenburns 24s ease-in-out infinite alternate;
+    mask-image:linear-gradient(#000,transparent)}
+  /* líneas del campo */
+  .lineas{position:fixed;left:50%;bottom:6%;width:min(80vw,680px);height:34vh;z-index:1;
+    translate:-50% 0;transform:perspective(600px) rotateX(60deg);transform-origin:bottom;
+    border:2px solid rgba(255,255,255,.4);border-bottom:0;opacity:.7}
+  .lineas::after{content:"";position:absolute;left:50%;top:-2px;width:34%;aspect-ratio:1;
+    translate:-50% -50%;border:2px solid rgba(255,255,255,.4);border-radius:50%}
+  @keyframes kenburns{
+    0%{transform:scale(1.12) translate(2%, -1%)}
+    100%{transform:scale(1.22) translate(-2%, 1%)}}
+
+  /* viñeta y oscurecido para legibilidad */
+  .overlay{position:fixed;inset:0;z-index:2;background:
+    radial-gradient(90% 90% at 50% 40%,transparent 30%,rgba(0,0,0,.55) 100%),
+    linear-gradient(180deg,rgba(3,10,6,.5),rgba(3,10,6,.72))}
+
+  .login{position:relative;z-index:3;width:min(92vw,380px);padding:36px 28px 26px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:24px;
+    backdrop-filter:blur(20px) saturate(150%);
+    box-shadow:0 30px 90px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.15) inset;
+    animation:subir .8s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes subir{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+  .marca{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:22px}
+  .escudo{width:66px;height:66px;border-radius:18px;display:grid;place-items:center;font-size:32px;
+    background:linear-gradient(145deg,#efe3b8,#c9a227);color:#2a2007;
+    box-shadow:0 8px 26px rgba(201,162,39,.5)}
+  .titulo{font-weight:800;letter-spacing:3px;font-size:16px;text-transform:uppercase;text-align:center;
+    text-shadow:0 2px 12px rgba(0,0,0,.6)}
+  .sub{font-size:11px;letter-spacing:3px;color:#efe3b8;font-weight:700;text-transform:uppercase}
+  label{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.7);margin:16px 0 6px}
+  .in{display:flex;align-items:center;gap:10px;padding:13px 14px;background:rgba(255,255,255,.1);
+    border:1px solid rgba(255,255,255,.18);border-radius:12px;transition:.2s}
+  .in:focus-within{border-color:#efe3b8;background:rgba(255,255,255,.16)}
+  .in input{flex:1;border:0;background:transparent;color:#fff;font-size:15px;outline:0}
+  .in input::placeholder{color:rgba(255,255,255,.45)}
+  .ojo{cursor:pointer;color:rgba(255,255,255,.7)}
+  .btn{margin-top:24px;width:100%;padding:15px;border:0;border-radius:12px;cursor:pointer;
+    font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:14px;color:#2a2007;
+    background:linear-gradient(145deg,#efe3b8,#c9a227);box-shadow:0 12px 30px rgba(201,162,39,.4);
+    transition:transform .15s}
+  .btn:hover{transform:translateY(-2px)}
+  .demo{margin-top:16px;text-align:center;font-size:11px;color:rgba(255,255,255,.55)}
+  .etq{position:fixed;top:14px;left:16px;z-index:4;font-size:11px;letter-spacing:2px;
+    text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="foto"></div><div class="publico"></div><div class="lineas"></div>
+  <div class="overlay"></div>
+  <div class="etq">Mockup 5 — Estadio · Ken Burns + glass</div>
+
+  <form class="login" onsubmit="return false">
+    <div class="marca">
+      <div class="escudo">⚽</div>
+      <div class="titulo">Ultime Team Manager</div>
+      <div class="sub">Inicia sesión</div>
+    </div>
+    <label>Correo</label>
+    <div class="in"><span>📧</span><input type="email" placeholder="tu@correo.com"></div>
+    <label>Contraseña</label>
+    <div class="in"><span>🔒</span><input id="p5" type="password" placeholder="••••••">
+      <span class="ojo" onclick="t('p5')">👁</span></div>
+    <button class="btn">Entrar</button>
+    <div class="demo">Demo: demo@ultime.com / 123456</div>
+  </form>
+
+<script>
+  function t(id){const i=document.getElementById(id);i.type=i.type==='password'?'text':'password'}
+</script>
+</body>
+</html>

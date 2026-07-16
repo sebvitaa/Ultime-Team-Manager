@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup 4b · Cancha + pases</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:#eafff2;overflow:hidden;display:grid;place-items:center;min-height:100dvh;background:#02060a}
+
+  /* ---------- Fondo de cancha (verde) ---------- */
+  .fondo{position:fixed;inset:0;z-index:0;background:
+    radial-gradient(60% 60% at 50% 42%,#0a2a1a 0%,#06140d 55%,#02060a 100%)}
+  .glow{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(50% 40% at 50% 44%,rgba(47,226,122,.16),transparent 70%);
+    animation:respira 6s ease-in-out infinite}
+  @keyframes respira{0%,100%{opacity:.5}50%{opacity:.95}}
+  .hex{position:fixed;inset:-10%;z-index:1;opacity:.35;
+    background-image:radial-gradient(rgba(47,226,122,.5) 1.4px,transparent 1.6px);
+    background-size:34px 34px;animation:desliza 24s linear infinite,latido 5s ease-in-out infinite;
+    mask-image:radial-gradient(75% 75% at 50% 50%,#000,transparent)}
+  @keyframes desliza{to{background-position:340px 0}}
+  @keyframes latido{0%,100%{opacity:.24}50%{opacity:.46}}
+  .vig{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(78% 78% at 50% 45%,transparent 50%,rgba(1,5,3,.66))}
+
+  .pitch{position:fixed;z-index:1;left:50%;top:50%;width:min(90vw,780px);aspect-ratio:16/10;
+    translate:-50% -50%;border:2px solid rgba(47,226,122,.55);border-radius:6px;
+    box-shadow:0 0 26px rgba(47,226,122,.28),0 0 70px rgba(47,226,122,.12) inset}
+  .pitch::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;
+    translate:-50% 0;background:rgba(47,226,122,.45)}
+  .pitch::after{content:"";position:absolute;left:50%;top:50%;width:24%;aspect-ratio:1;
+    translate:-50% -50%;border:2px solid rgba(47,226,122,.45);border-radius:50%}
+  .area{position:absolute;top:50%;width:15%;height:50%;translate:0 -50%;border:2px solid rgba(47,226,122,.4)}
+  .area.izq{left:0;border-left:0}.area.der{right:0;border-right:0}
+  .chica{position:absolute;top:50%;width:6.5%;height:26%;translate:0 -50%;border:2px solid rgba(47,226,122,.32)}
+  .chica.izq{left:0;border-left:0}.chica.der{right:0;border-right:0}
+  .goal{position:absolute;top:50%;width:9px;height:18%;translate:0 -50%;
+    border:2px solid rgba(47,226,122,.55);box-shadow:0 0 12px rgba(47,226,122,.4)}
+  .goal.izq{left:-9px;border-right:0}.goal.der{right:-9px;border-left:0}
+  .spot{position:absolute;width:6px;height:6px;border-radius:50%;translate:-50% -50%;
+    background:rgba(140,240,180,.8);box-shadow:0 0 8px rgba(47,226,122,.75)}
+  .spot.c{left:50%;top:50%}.spot.p1{left:10.5%;top:50%}.spot.p2{left:89.5%;top:50%}
+  .corner{position:absolute;width:16px;height:16px;border:2px solid rgba(47,226,122,.38);border-radius:50%}
+  .corner.tl{left:-8px;top:-8px;clip-path:inset(50% 0 0 50%)}
+  .corner.tr{right:-8px;top:-8px;clip-path:inset(50% 50% 0 0)}
+  .corner.bl{left:-8px;bottom:-8px;clip-path:inset(0 0 50% 50%)}
+  .corner.br{right:-8px;bottom:-8px;clip-path:inset(0 50% 50% 0)}
+
+  /* barrido de luz que recorre el campo de izq a der */
+  .scan{position:fixed;z-index:1;left:50%;top:50%;width:min(90vw,780px);aspect-ratio:16/10;
+    translate:-50% -50%;overflow:hidden;border-radius:6px;pointer-events:none}
+  .scan::before{content:"";position:absolute;top:0;bottom:0;width:36%;
+    background:linear-gradient(90deg,transparent,rgba(47,226,122,.22),transparent);
+    animation:recorre 6.5s ease-in-out infinite}
+  @keyframes recorre{0%{left:-40%}100%{left:100%}}
+
+  #cv{position:fixed;z-index:1;pointer-events:none}
+
+  /* ---------- Login estilo EA (carbón mate + verde) ---------- */
+  .login{position:relative;z-index:2;width:min(92vw,400px);padding:34px 28px 26px;
+    background:rgba(9,12,11,.9);border:1px solid rgba(255,255,255,.1);border-radius:22px;
+    backdrop-filter:blur(10px);box-shadow:0 30px 72px rgba(0,0,0,.62);
+    animation:subir .7s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes subir{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+  .crest{display:flex;justify-content:center;margin-bottom:14px}
+  .crest svg{width:70px;height:auto;filter:drop-shadow(0 4px 16px rgba(47,226,122,.35))}
+  .titulo{font-size:23px;font-weight:800;letter-spacing:-.3px;text-align:center;
+    line-height:1.05;color:#f4f7f9}
+  .sub{text-align:center;margin-top:8px;font-size:12px;letter-spacing:.3px;color:#8b98a2}
+
+  .field{display:flex;align-items:center;gap:12px;padding:9px 16px;min-height:60px;margin-top:12px;
+    background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.13);border-radius:16px;transition:.2s}
+  .field:focus-within{border-color:#57d968;box-shadow:0 0 0 3px rgba(87,217,104,.16)}
+  .ic{color:#8b98a2;display:flex;flex:0 0 auto}
+  .field:focus-within .ic{color:#57d968}
+  .ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .col{display:flex;flex-direction:column;flex:1;min-width:0}
+  .lab{font-size:10.5px;letter-spacing:.4px;color:#8b98a2;font-weight:600;margin-bottom:2px}
+  .col input{border:0;background:transparent;color:#f0f3f5;font-size:15.5px;outline:0;width:100%;padding:0}
+  .col input::placeholder{color:rgba(200,210,218,.3)}
+  .ojo{display:flex;align-items:center;justify-content:center;background:none;border:0;cursor:pointer;
+    color:#8b98a2;padding:4px;border-radius:8px;transition:color .15s}
+  .ojo:hover{color:#57d968}
+  .ojo svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  .btn{margin-top:24px;width:100%;height:52px;border:0;border-radius:999px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    font-weight:700;letter-spacing:.3px;font-size:15px;color:#05210f;
+    background:linear-gradient(180deg,#63e07a,#3cc35b);
+    box-shadow:0 12px 28px rgba(60,195,91,.36);transition:transform .15s,box-shadow .15s,filter .15s}
+  .btn:hover{transform:translateY(-1px);filter:brightness(1.05);box-shadow:0 16px 36px rgba(60,195,91,.52)}
+  .btn:active{transform:translateY(0)}
+  .btn svg{width:17px;height:17px;stroke:#05210f;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+  .demo{margin-top:18px;text-align:center;font-size:11px;letter-spacing:.3px;color:#6f7c84}
+
+  .etq{position:fixed;top:14px;left:16px;z-index:3;font-size:11px;letter-spacing:2px;
+    text-transform:uppercase;color:rgba(234,255,242,.45);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="fondo"></div><div class="glow"></div><div class="hex"></div><div class="vig"></div>
+
+  <div class="pitch" id="pitch">
+    <span class="area izq"></span><span class="area der"></span>
+    <span class="chica izq"></span><span class="chica der"></span>
+    <span class="goal izq"></span><span class="goal der"></span>
+    <span class="spot c"></span><span class="spot p1"></span><span class="spot p2"></span>
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+  </div>
+  <div class="scan"></div>
+  <canvas id="cv"></canvas>
+
+  <div class="etq">Mockup 4b — Cancha · pases</div>
+
+  <form class="login" onsubmit="return false">
+    <div class="crest">
+      <svg viewBox="0 0 100 112" aria-label="Ultime Team Manager">
+        <defs>
+          <linearGradient id="gc" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#bdf7d3"/><stop offset="1" stop-color="#12a355"/>
+          </linearGradient>
+        </defs>
+        <path d="M50 3 L94 19 V57 C94 85 74 102 50 109 C26 102 6 85 6 57 V19 Z"
+              fill="rgba(9,20,14,.94)" stroke="url(#gc)" stroke-width="3.5" stroke-linejoin="round"/>
+        <text x="50" y="26" text-anchor="middle" font-family="system-ui,sans-serif"
+              font-size="13" font-weight="800" letter-spacing="2" fill="url(#gc)">UTM</text>
+        <path d="M13 33 H87" stroke="url(#gc)" stroke-width="1.4" opacity=".35"/>
+        <g stroke="url(#gc)" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="50" cy="63" r="23"/>
+          <line x1="50" y1="49" x2="50" y2="40"/>
+          <line x1="59.1" y1="57.5" x2="67.9" y2="53.9"/>
+          <line x1="55.6" y1="69.5" x2="61.6" y2="77.6"/>
+          <line x1="44.4" y1="69.5" x2="38.4" y2="77.6"/>
+          <line x1="40.9" y1="57.5" x2="32.1" y2="53.9"/>
+        </g>
+        <path d="M50 55 L57.6 60.5 L54.7 69.5 L45.3 69.5 L42.4 60.5 Z" fill="url(#gc)"/>
+      </svg>
+    </div>
+
+    <div class="titulo">Ultime Team<br>Manager</div>
+    <div class="sub">Inicia sesión para gestionar tu club</div>
+
+    <div class="field">
+      <span class="ic"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.6"/><path d="m4 7 8 5.5L20 7"/></svg></span>
+      <div class="col"><span class="lab">Correo electrónico</span>
+        <input type="email" placeholder="tu@correo.com" autocomplete="off"></div>
+    </div>
+
+    <div class="field">
+      <span class="ic"><svg class="ico" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="9.5" rx="2.4"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg></span>
+      <div class="col"><span class="lab">Contraseña</span>
+        <input id="clave" type="password" placeholder="••••••••"></div>
+      <button type="button" class="ojo" onclick="verClave()" aria-label="Mostrar contraseña">
+        <svg id="eye" viewBox="0 0 24 24"><path d="M2 12s3.8-7 10-7 10 7 10 7-3.8 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+        <svg id="eyeoff" viewBox="0 0 24 24" style="display:none"><path d="M9.9 5.2A10.6 10.6 0 0 1 12 5c6.2 0 10 7 10 7a18 18 0 0 1-3.2 4.1M6.3 6.3A18 18 0 0 0 2 12s3.8 7 10 7a10.5 10.5 0 0 0 4.2-.9"/><path d="M9.5 9.5a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/></svg>
+      </button>
+    </div>
+
+    <button class="btn">Entrar
+      <svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+    </button>
+    <div class="demo">Demo: demo@ultime.com / 123456</div>
+  </form>
+
+<script>
+  // ---- toggle del ojo (SVG, sin emojis) ----
+  function verClave(){
+    const i=document.getElementById('clave');
+    const oculto=i.type==='password';
+    i.type=oculto?'text':'password';
+    document.getElementById('eye').style.display=oculto?'none':'block';
+    document.getElementById('eyeoff').style.display=oculto?'block':'none';
+  }
+
+  // ---- balón dando pases (ritmo de partido, rueda en 3D) ----
+  const pitch=document.getElementById('pitch');
+  const cv=document.getElementById('cv');
+  const ctx=cv.getContext('2d');
+  let W=0,H=0,dpr=1;
+
+  function fit(){
+    const r=pitch.getBoundingClientRect();
+    cv.style.left=r.left+'px'; cv.style.top=r.top+'px';
+    cv.style.width=r.width+'px'; cv.style.height=r.height+'px';
+    dpr=Math.min(2,window.devicePixelRatio||1);
+    W=r.width; H=r.height;
+    cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  const clampCampo=p=>{const mx=W*0.07,my=H*0.11;
+    p.x=Math.max(mx,Math.min(W-mx,p.x)); p.y=Math.max(my,Math.min(H-my,p.y)); return p;};
+  const puntoCampo=()=>{const mx=W*0.08,my=H*0.12;
+    return {x:mx+Math.random()*(W-2*mx), y:my+Math.random()*(H-2*my)};};
+
+  // pase corto: destino entre un radio MÍNIMO y MÁXIMO alrededor del balón
+  function destinoCorto(pos){
+    const minR=W*0.12, maxR=W*0.30;
+    for(let i=0;i<14;i++){
+      const ang=Math.random()*Math.PI*2;
+      const dist=minR+Math.random()*(maxR-minR);
+      const p=clampCampo({x:pos.x+Math.cos(ang)*dist, y:pos.y+Math.sin(ang)*dist});
+      if(Math.hypot(p.x-pos.x,p.y-pos.y)>=minR*0.8) return p;
+    }
+    return puntoCampo();
+  }
+  function destinoLargo(pos){
+    let p=puntoCampo();
+    for(let i=0;i<14;i++){p=puntoCampo(); if(Math.hypot(p.x-pos.x,p.y-pos.y)>W*0.36) break;}
+    return p;
+  }
+  function siguiente(pos){
+    return Math.random()<0.2 ? {p:destinoLargo(pos),tipo:'largo'} : {p:destinoCorto(pos),tipo:'corto'};
+  }
+  function duracion(a,b,tipo){
+    const d=Math.hypot(b.x-a.x,b.y-a.y);
+    return tipo==='corto' ? Math.min(0.85,Math.max(0.38,d/330))
+                          : Math.min(1.05,Math.max(0.55,d/470));
+  }
+  function delay(tipo){
+    return tipo==='corto' ? 280+Math.random()*260 : 90+Math.random()*170;
+  }
+  const easeOut=x=>1-Math.pow(1-x,3);
+
+  // --- geometría del balón: 12 pentágonos = vértices de un icosaedro ---
+  const PHI=(1+Math.sqrt(5))/2;
+  const SPHERE=[
+    [0,1,PHI],[0,1,-PHI],[0,-1,PHI],[0,-1,-PHI],
+    [1,PHI,0],[1,-PHI,0],[-1,PHI,0],[-1,-PHI,0],
+    [PHI,0,1],[PHI,0,-1],[-PHI,0,1],[-PHI,0,-1]
+  ].map(v=>{const n=Math.hypot(v[0],v[1],v[2]);return [v[0]/n,v[1]/n,v[2]/n];});
+
+  // matriz de rotación 3x3
+  const IDENT=[1,0,0,0,1,0,0,0,1];
+  function rotAxis(a,ang){const [x,y,z]=a,c=Math.cos(ang),s=Math.sin(ang),t=1-c;
+    return [t*x*x+c,t*x*y-s*z,t*x*z+s*y, t*x*y+s*z,t*y*y+c,t*y*z-s*x, t*x*z-s*y,t*y*z+s*x,t*z*z+c];}
+  function mul(A,B){const r=new Array(9);
+    for(let i=0;i<3;i++)for(let j=0;j<3;j++)
+      r[i*3+j]=A[i*3]*B[j]+A[i*3+1]*B[3+j]+A[i*3+2]*B[6+j];
+    return r;}
+  const apply=(R,p)=>[R[0]*p[0]+R[1]*p[1]+R[2]*p[2],
+                      R[3]*p[0]+R[4]*p[1]+R[5]*p[2],
+                      R[6]*p[0]+R[7]*p[1]+R[8]*p[2]];
+
+  function nuevoBalon(r){
+    const p=puntoCampo();
+    return {pos:{...p},from:{...p},to:{...p},prog:1,dur:1,tipo:'corto',
+            esperando:true,esperaHasta:performance.now()+300,R:IDENT.slice(),r};
+  }
+  let balon;
+  function reinicia(){ fit(); balon=nuevoBalon(9); ctx.clearRect(0,0,W,H); }
+
+  function dibujarBalon(m){
+    const {x,y}=m.pos, r=m.r;
+    // sombra en el césped
+    ctx.beginPath(); ctx.ellipse(x,y+r*0.92,r*0.95,r*0.4,0,0,Math.PI*2);
+    ctx.fillStyle='rgba(0,0,0,0.28)'; ctx.fill();
+    // cuerpo esférico con sombreado
+    const g=ctx.createRadialGradient(x-r*0.35,y-r*0.4,r*0.2, x,y,r);
+    g.addColorStop(0,'#ffffff'); g.addColorStop(1,'#c3ccd4');
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+    ctx.lineWidth=1; ctx.strokeStyle='rgba(6,22,14,.35)'; ctx.stroke();
+    // pentágonos del hemisferio frontal (rotan en 3D)
+    ctx.save();
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.clip();
+    for(const p0 of SPHERE){
+      const p=apply(m.R,p0);
+      if(p[2]<=0.02) continue;                 // solo cara visible
+      const sx=x+p[0]*r, sy=y+p[1]*r, d=p[2];
+      const size=r*0.34*(0.45+0.55*d);
+      ctx.globalAlpha=0.30+0.6*d;
+      ctx.fillStyle='#0d1c13';
+      ctx.beginPath(); ctx.arc(sx,sy,size,0,Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha=1; ctx.restore();
+  }
+
+  let ultimo=performance.now();
+  function frame(now){
+    const dt=Math.min(0.05,(now-ultimo)/1000); ultimo=now;
+    ctx.clearRect(0,0,W,H);
+
+    const m=balon;
+    if(m.esperando){
+      if(now>=m.esperaHasta){
+        const s=siguiente(m.pos);
+        m.from={...m.pos}; m.to=s.p; m.tipo=s.tipo;
+        m.prog=0; m.dur=duracion(m.from,m.to,s.tipo); m.esperando=false;
+      }
+    }else{
+      const prev={...m.pos};
+      m.prog+=dt/m.dur; if(m.prog>1)m.prog=1;
+      const e=easeOut(m.prog);
+      m.pos={x:m.from.x+(m.to.x-m.from.x)*e, y:m.from.y+(m.to.y-m.from.y)*e};
+      // rodar en 3D: girar sobre el eje perpendicular al movimiento
+      const dx=m.pos.x-prev.x, dy=m.pos.y-prev.y, dl=Math.hypot(dx,dy);
+      if(dl>0.001){
+        const ang=dl/m.r;                         // rodadura real
+        m.R=mul(rotAxis([-dy/dl, dx/dl, 0], ang), m.R);
+      }
+      if(m.prog>=1){ m.esperando=true; m.esperaHasta=now+delay(m.tipo); }
+    }
+    dibujarBalon(m);
+    requestAnimationFrame(frame);
+  }
+
+  reinicia();
+  let rt; addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(reinicia,150)});
+  requestAnimationFrame(frame);
+</script>
+</body>
+</html>
