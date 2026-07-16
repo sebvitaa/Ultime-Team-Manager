@@ -30,9 +30,10 @@ requisitos mínimos de la unidad:
 |---|---------------|-------------|
 | RF1 | Login y sesión | Inicio de sesión con validación de campos. Sesión persistente. Offline hoy, escalable a online. |
 | RF2 | Plantilla 11 (4-3-3) | Colocar futbolistas en sus posiciones sobre el campo, con la alineación 4-3-3 por defecto. |
-| RF3 | Cartas | Cada futbolista es una carta con su valoración (rating) y atributos. |
+| RF3 | Cartas | Cada futbolista es una carta con su valoración (rating) y atributos. Por ahora los atributo son su posición, que define en que posiciones puede jugar en el 4-3-3 y su precio, cantidad de monedas por las que se puede vender o comprar en el mercado.|
+| RF4 | Monedas | Dinero que tiene el jugador y que puede gastar en jugadores o en partidos. 
 | RF4 | Mercado | Comprar y vender cartas (CRUD sobre la colección del usuario). |
-| RF5 | Simulación de partidos | Resultado en función de la valoración media de cada equipo. |
+| RF5 | Simulación de partidos | Resultado en función de la valoración media de cada equipo. Jugar un partido cuesta una suma (mientras mejor son los equipos, más cuesta), y ganar te da un premio (2x lo que se pagó por el partido).|
 | RF6 | Liga | Varios equipos; cada partido reparte monedas según el resultado. |
 
 > **Diseño offline-first, escalable a online:** toda la lógica de datos pasa por
