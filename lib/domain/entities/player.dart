@@ -45,4 +45,15 @@ class Player {
     required this.rating,
     required this.position,
   });
+
+  // Para mostrar el nombre en 2 líneas en la carta (nombre / apellido).
+  String get firstName {
+    final idx = name.indexOf(' ');
+    return idx == -1 ? name : name.substring(0, idx);
+  }
+
+  String get lastName {
+    final idx = name.indexOf(' ');
+    return idx == -1 ? '' : name.substring(idx + 1);
+  }
 }

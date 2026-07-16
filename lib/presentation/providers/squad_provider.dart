@@ -11,12 +11,14 @@ final squadRepositoryProvider = Provider<SquadRepository>((ref) {
 
 // 2) El estado inmutable que observa la UI.
 class SquadState {
-  final List<Player> players;
+  final List<Player> players; // 11 titular
+  final List<Player> bench; // suplentes disponibles
   final bool isLoading;
   final String? errorMessage;
 
   const SquadState({
     this.players = const [],
+    this.bench = const [],
     this.isLoading = false,
     this.errorMessage,
   });
@@ -28,13 +30,19 @@ class SquadState {
     return sum / players.length;
   }
 
+  // Suplentes disponibles para la misma posición que [player].
+  List<Player> benchFor(Player player) =>
+      bench.where((b) => b.position == player.position).toList();
+
   SquadState copyWith({
     List<Player>? players,
+    List<Player>? bench,
     bool? isLoading,
     String? errorMessage,
   }) {
     return SquadState(
       players: players ?? this.players,
+      bench: bench ?? this.bench,
       isLoading: isLoading ?? this.isLoading,
       errorMessage: errorMessage, // se limpia si no se pasa
     );
@@ -56,13 +64,28 @@ class SquadController extends Notifier<SquadState> {
 
   Future<void> _loadSquad() async {
     try {
-      final players = await _repo.getSquad();
-      state = state.copyWith(players: players, isLoading: false);
+      final squad = await _repo.getSquad();
+      state = state.copyWith(
+        players: squad.starters,
+        bench: squad.bench,
+        isLoading: false,
+      );
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'No se pudo cargar la plantilla',
       );
     }
+  }
+
+  // Manda a la banca al titular y sube al suplente elegido a su lugar.
+  void swapWithBench(Player starter, Player substitute) {
+    final players = [
+      for (final p in state.players) p.id == starter.id ? substitute : p,
+    ];
+    final bench = [
+      for (final b in state.bench) b.id == substitute.id ? starter : b,
+    ];
+    state = state.copyWith(players: players, bench: bench);
   }
 }

@@ -1,0 +1,2 @@
+- [ ] [PROJ] **Funcionalidades plantilla** El jugador tiene un una banca, por lo que al hacer click en un jugador se desplegará, desde abajo, un menú. El menú esta estructurado con el jugador actual en la parte superior, con la banca para dicha posición abajo. Se puede ver un foto del jugador a la izquierda, el nombre y a la derecha el puntaje del jugador
+- [ ] [FE] **Tarjetas en cancha** El nombre y el apellido tienen que estar en 2 líneas centradas, para evitar que no sea posible ver el nombre completo. 

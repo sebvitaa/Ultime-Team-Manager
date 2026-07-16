@@ -1,5 +1,5 @@
-import 'package:contador_app/domain/entities/player.dart';
+import 'package:contador_app/domain/entities/squad.dart';
 
 abstract class SquadRepository {
-  Future<List<Player>> getSquad();
+  Future<Squad> getSquad();
 }

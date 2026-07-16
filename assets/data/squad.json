@@ -1,13 +1,27 @@
-[
-  { "id": "p1", "name": "Mateo Rojas", "rating": 84, "position": "gk" },
-  { "id": "p2", "name": "Iker Fuentes", "rating": 81, "position": "lb" },
-  { "id": "p3", "name": "Diego Salas", "rating": 86, "position": "cb" },
-  { "id": "p4", "name": "Bruno Castillo", "rating": 83, "position": "cb" },
-  { "id": "p5", "name": "Nicolás Vidal", "rating": 80, "position": "rb" },
-  { "id": "p6", "name": "Simón Aránguiz", "rating": 87, "position": "cm" },
-  { "id": "p7", "name": "Tomás Herrera", "rating": 85, "position": "cm" },
-  { "id": "p8", "name": "Franco Bravo", "rating": 82, "position": "cm" },
-  { "id": "p9", "name": "Emiliano Torres", "rating": 88, "position": "lw" },
-  { "id": "p10", "name": "Agustín Morales", "rating": 91, "position": "st" },
-  { "id": "p11", "name": "Lucas Peñailillo", "rating": 89, "position": "rw" }
-]
+{
+  "starters": [
+    { "id": "p1", "name": "Mateo Rojas", "rating": 84, "position": "gk" },
+    { "id": "p2", "name": "Iker Fuentes", "rating": 81, "position": "lb" },
+    { "id": "p3", "name": "Diego Salas", "rating": 86, "position": "cb" },
+    { "id": "p4", "name": "Bruno Castillo", "rating": 83, "position": "cb" },
+    { "id": "p5", "name": "Nicolás Vidal", "rating": 80, "position": "rb" },
+    { "id": "p6", "name": "Simón Aránguiz", "rating": 87, "position": "cm" },
+    { "id": "p7", "name": "Tomás Herrera", "rating": 85, "position": "cm" },
+    { "id": "p8", "name": "Franco Bravo", "rating": 82, "position": "cm" },
+    { "id": "p9", "name": "Emiliano Torres", "rating": 88, "position": "lw" },
+    { "id": "p10", "name": "Agustín Morales", "rating": 91, "position": "st" },
+    { "id": "p11", "name": "Lucas Peñailillo", "rating": 89, "position": "rw" }
+  ],
+  "bench": [
+    { "id": "b1", "name": "Cristóbal Núñez", "rating": 79, "position": "gk" },
+    { "id": "b2", "name": "Matías Cárdenas", "rating": 76, "position": "lb" },
+    { "id": "b3", "name": "Joaquín Silva", "rating": 78, "position": "cb" },
+    { "id": "b4", "name": "Vicente Molina", "rating": 77, "position": "cb" },
+    { "id": "b5", "name": "Ignacio Paredes", "rating": 75, "position": "rb" },
+    { "id": "b6", "name": "Benjamín Soto", "rating": 80, "position": "cm" },
+    { "id": "b7", "name": "Maximiliano Reyes", "rating": 78, "position": "cm" },
+    { "id": "b8", "name": "Cristóbal Vera", "rating": 79, "position": "lw" },
+    { "id": "b9", "name": "Martín Contreras", "rating": 81, "position": "st" },
+    { "id": "b10", "name": "Sebastián Flores", "rating": 78, "position": "rw" }
+  ]
+}
