@@ -13,10 +13,10 @@ class FormationSlot {
 // 4-3-3: delanteros arriba (área rival) y arquero abajo (área propia), como
 // se lee habitualmente un armador de plantilla en vertical.
 const List<FormationSlot> kFormation433 = [
-  // Delanteros
-  FormationSlot(PlayerPosition.lw, Alignment(-0.72, -0.86)),
-  FormationSlot(PlayerPosition.st, Alignment(0.0, -0.92)),
-  FormationSlot(PlayerPosition.rw, Alignment(0.72, -0.86)),
+  // Delanteros (algo hacia dentro para que la carta no se recorte arriba)
+  FormationSlot(PlayerPosition.lw, Alignment(-0.72, -0.81)),
+  FormationSlot(PlayerPosition.st, Alignment(0.0, -0.85)),
+  FormationSlot(PlayerPosition.rw, Alignment(0.72, -0.81)),
   // Mediocampistas
   FormationSlot(PlayerPosition.cm, Alignment(-0.55, -0.30)),
   FormationSlot(PlayerPosition.cm, Alignment(0.0, -0.42)),
@@ -26,8 +26,8 @@ const List<FormationSlot> kFormation433 = [
   FormationSlot(PlayerPosition.cb, Alignment(-0.26, 0.34)),
   FormationSlot(PlayerPosition.cb, Alignment(0.26, 0.34)),
   FormationSlot(PlayerPosition.rb, Alignment(0.75, 0.30)),
-  // Arquero
-  FormationSlot(PlayerPosition.gk, Alignment(0.0, 0.86)),
+  // Arquero (algo hacia dentro para que la carta no se recorte abajo)
+  FormationSlot(PlayerPosition.gk, Alignment(0.0, 0.81)),
 ];
 
 // Empareja cada jugador con el puesto de su misma posición (en el mismo

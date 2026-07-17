@@ -21,19 +21,32 @@ class MarketRepositoryApi implements MarketRepository {
   // otro respondió, se muestra lo que haya en vez de fallar todo.
   @override
   Future<List<Player>> fetchListings() async {
-    final players = <Player>[];
     MarketException? firstError;
-    for (final teamId in ApiFootballDatasource.marketTeams) {
-      try {
-        players.addAll(await _cached(
-          'market_cache_t${teamId}_s${ApiFootballDatasource.season}',
-          () => _api.fetchTeamPlayers(teamId),
-        ));
-      } on MarketException catch (e) {
-        firstError ??= e;
+    // En paralelo: 16 equipos en serie serían lentos. Cada uno pasa por su
+    // caché, así que en la práctica son 0 peticiones si el caché está vigente.
+    final lists = await Future.wait(
+      ApiFootballDatasource.marketTeams.map((teamId) async {
+        try {
+          return await _cached(
+            'market_cache_t${teamId}_s${ApiFootballDatasource.season}',
+            () => _api.fetchTeamPlayers(teamId),
+          );
+        } on MarketException catch (e) {
+          firstError ??= e;
+          return <Player>[];
+        }
+      }),
+    );
+    // Se juntan sin duplicar por id (un jugador puede figurar en dos planteles).
+    final seen = <String>{};
+    final players = <Player>[];
+    for (final list in lists) {
+      for (final p in list) {
+        if (seen.add(p.id)) players.add(p);
       }
     }
-    if (players.isEmpty && firstError != null) throw firstError;
+    final err = firstError;
+    if (players.isEmpty && err != null) throw err;
     return players;
   }
 

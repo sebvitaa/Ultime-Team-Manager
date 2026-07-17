@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Partido · VS + comentarios</title>
+<style>
+  :root{--verde:#2fe27a;--verde2:#12a355;--naranja:#f79457;--fondo:#02060a;
+        --texto:#f4f7f9;--gris:#8b98a2;--borde:rgba(255,255,255,.10)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--texto);
+    background:var(--fondo);overflow:hidden;min-height:100dvh}
+
+  /* Arena dividida en diagonal (verde local / naranja visita) */
+  .arena{position:fixed;inset:0;z-index:0}
+  .half{position:absolute;top:0;bottom:0;width:62%}
+  .half.l{left:0;background:radial-gradient(60% 70% at 32% 38%,#0e3a24,#06140d 70%);
+    clip-path:polygon(0 0,100% 0,80% 100%,0 100%)}
+  .half.r{right:0;background:radial-gradient(60% 70% at 68% 38%,#3a1a10,#140a06 70%);
+    clip-path:polygon(20% 0,100% 0,100% 100%,0 100%)}
+  .seam{position:fixed;top:0;bottom:0;left:50%;translate:-50%;width:2px;z-index:1;
+    background:linear-gradient(180deg,transparent,rgba(255,255,255,.22),transparent)}
+  .vig{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(72% 72% at 50% 40%,transparent 38%,rgba(1,5,3,.62))}
+
+  /* Contenido en columna sobre la arena */
+  .wrap{position:relative;z-index:2;height:100dvh;display:flex;flex-direction:column;
+    padding:16px;gap:12px}
+
+  /* Cronómetro arriba */
+  .clockwrap{align-self:center;display:flex;align-items:center;gap:8px;
+    background:rgba(9,12,11,.8);border:1px solid var(--borde);border-radius:999px;padding:6px 16px}
+  .live{width:7px;height:7px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 8px #ff4d4d;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .clock{font-weight:800;font-size:16px;color:var(--verde);font-variant-numeric:tabular-nums;letter-spacing:2px}
+
+  /* Cara a cara (sin escudos) */
+  .stage{flex:1;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:min(5vw,32px)}
+  .side{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .tname{font-weight:900;font-size:min(6.5vw,26px);letter-spacing:.5px;text-align:center;line-height:1.05}
+  .accent{width:44px;height:4px;border-radius:2px}
+  .accent.l{background:var(--verde)} .accent.r{background:var(--naranja)}
+  .media{font-size:12px;color:var(--gris);letter-spacing:1px;text-transform:uppercase}
+  .media b{color:var(--texto);font-size:15px}
+  .goals{font-weight:900;font-size:min(20vw,96px);line-height:.9;font-variant-numeric:tabular-nums;margin-top:4px}
+  .goals.l{color:var(--verde)} .goals.r{color:var(--naranja)}
+  .mid{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .vs{font-weight:900;font-size:min(8vw,34px);color:var(--gris)}
+  .stageinfo{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:1px}
+
+  /* Línea de tiempo 90' con marcas de gol */
+  .timeline{position:relative;height:6px;background:var(--borde);border-radius:3px}
+  .timeline>i{position:absolute;inset:0 auto 0 0;width:0;border-radius:3px;
+    background:linear-gradient(90deg,var(--verde2),var(--verde))}
+  .mark{position:absolute;top:-5px;width:16px;height:16px;translate:-50%;border-radius:50%;
+    display:grid;place-items:center;font-size:9px;color:var(--fondo);background:var(--verde)}
+  .mark.r{background:var(--naranja)}
+
+  /* Relato de eventos en vivo */
+  .feed{height:150px;overflow:hidden;background:rgba(9,12,11,.84);border:1px solid var(--borde);
+    border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+  .ev{display:flex;gap:10px;align-items:flex-start;animation:in .35s ease}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .m{font-weight:800;font-size:12px;color:var(--verde);font-variant-numeric:tabular-nums;flex:0 0 30px}
+  .tx{font-size:13px;color:var(--texto);line-height:1.3}
+  .tx.gol{font-weight:800}
+  .tx.gol.r{color:var(--naranja)} .tx.gol.l{color:var(--verde)}
+  .etq{position:fixed;top:12px;left:14px;z-index:4;font-size:10px;letter-spacing:2px;
+    text-transform:uppercase;color:rgba(244,247,249,.35);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="arena"><div class="half l"></div><div class="half r"></div></div>
+  <div class="seam"></div><div class="vig"></div>
+  <div class="etq">Partido — VS + comentarios</div>
+
+  <div class="wrap">
+    <div class="clockwrap"><span class="live"></span><span class="clock" id="clock">00'</span></div>
+
+    <div class="stage">
+      <div class="side">
+        <div class="tname">ULTIME FC</div>
+        <div class="accent l"></div>
+        <div class="media">Media <b>78</b></div>
+        <div class="goals l" id="gl">0</div>
+      </div>
+      <div class="mid">
+        <div class="stageinfo">Jornada 7</div>
+        <div class="vs">VS</div>
+        <div class="stageinfo">La Liga</div>
+      </div>
+      <div class="side">
+        <div class="tname">REAL CF</div>
+        <div class="accent r"></div>
+        <div class="media">Media <b>81</b></div>
+        <div class="goals r" id="gv">0</div>
+      </div>
+    </div>
+
+    <div class="timeline" id="tl"><i id="bar"></i></div>
+
+    <div class="feed" id="feed"></div>
+  </div>
+
+<script>
+  let min=0, gl=0, gv=0;
+  const $=id=>document.getElementById(id);
+  const feed=$('feed');
+  const goles=[{m:16,t:'l',txt:'¡GOOOL de ULTIME FC! Definición de Bellingham al ángulo.'},
+               {m:34,t:'v',txt:'¡GOOOL de REAL CF! Contragolpe letal, 1–1.'},
+               {m:58,t:'l',txt:'¡GOOOL de ULTIME FC! Cabezazo tras el córner.'},
+               {m:79,t:'v',txt:'¡GOOOL de REAL CF! Empata sobre el final.'}];
+  const frases=['Circula el balón por el mediocampo.','Presión alta de ULTIME FC.',
+    'Recupera REAL CF y sale rápido.','Centro al área, despeja la defensa.',
+    'Falta peligrosa cerca del área.','Pase filtrado, se anticipa el arquero.','Tiro desviado, sigue el partido.'];
+
+  function addEvent(m,txt,gol){
+    const e=document.createElement('div'); e.className='ev';
+    e.innerHTML=`<span class="m">${String(m).padStart(2,'0')}'</span>`+
+                `<span class="tx ${gol?('gol '+gol):''}">${gol?'⚽ ':''}${txt}</span>`;
+    feed.prepend(e); while(feed.children.length>6) feed.lastChild.remove();
+  }
+  function popGoal(el){ el.animate([{transform:'scale(1.6)'},{transform:'scale(1)'}],{duration:420,easing:'ease-out'}); }
+  function mark(m,t){ const d=document.createElement('div'); d.className='mark'+(t==='v'?' r':'');
+    d.style.left=(m/90*100)+'%'; d.textContent='⚽'; $('tl').appendChild(d); }
+
+  addEvent(0,'Rueda el balón en el Estadio Ultime.',false);
+  const tick=setInterval(()=>{
+    min++; $('clock').textContent=String(min).padStart(2,'0')+"'"; $('bar').style.width=(min/90*100)+'%';
+    const g=goles.find(g=>g.m===min);
+    if(g){ if(g.t==='l'){gl++;$('gl').textContent=gl;popGoal($('gl'));}
+           else {gv++;$('gv').textContent=gv;popGoal($('gv'));}
+           addEvent(min,g.txt, g.t==='l'?'l':'r'); mark(min,g.t==='l'?'l':'v'); }
+    else if(min%6===0){ addEvent(min,frases[Math.floor(Math.random()*frases.length)],false); }
+    if(min>=90){ clearInterval(tick); $('clock').textContent='FINAL'; addEvent(90,'Final del partido: 2–2.',false); }
+  },220);
+</script>
+</body>
+</html>

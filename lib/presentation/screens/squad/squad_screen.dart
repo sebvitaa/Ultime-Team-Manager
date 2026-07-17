@@ -67,7 +67,7 @@ class SquadScreen extends ConsumerWidget {
                   final pitch = computePitchRect(constraints.biggest);
                   final players = squad.players;
                   final offsets = mapPlayersToPitch(players, pitch);
-                  final cardWidth = pitch.width * 0.20;
+                  final cardWidth = pitch.width * 0.185;
                   final cardHeight = PlayerCard.heightFor(cardWidth);
 
                   return Stack(
@@ -96,7 +96,7 @@ class SquadScreen extends ConsumerWidget {
               ),
             ),
             Positioned(
-              top: 12,
+              top: 350,
               left: 0,
               right: 0,
               child: Center(

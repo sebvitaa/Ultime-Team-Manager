@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Partido 3 · Simulación con campo</title>
+<style>
+  :root{--verde:#2fe27a;--verde2:#12a355;--fondo:#02060a;--carbon:#0d1411;
+        --texto:#f4f7f9;--gris:#8b98a2;--borde:rgba(255,255,255,.10)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--texto);
+    background:var(--fondo);overflow:hidden;min-height:100dvh;
+    display:flex;flex-direction:column;gap:12px;padding:14px}
+
+  /* Marcador compacto arriba */
+  .head{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:linear-gradient(180deg,rgba(14,20,17,.92),rgba(8,11,9,.94));
+    border:1px solid var(--borde);border-radius:16px;padding:10px 14px}
+  .side{display:flex;align-items:center;gap:9px;flex:1;min-width:0}
+  .side.r{flex-direction:row-reverse}
+  .crest{width:34px;height:38px;flex:0 0 auto}
+  .nm{font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mid{display:flex;flex-direction:column;align-items:center;gap:3px;flex:0 0 auto;padding:0 6px}
+  .sc{font-weight:900;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+  .sc .l{color:var(--verde)} .sc .r{color:#f79457}
+  .clk{display:flex;align-items:center;gap:5px;background:rgba(47,226,122,.12);
+    border:1px solid rgba(47,226,122,.3);border-radius:999px;padding:2px 8px}
+  .live{width:6px;height:6px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 8px #ff4d4d;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .clk span{font-weight:800;font-size:11px;color:var(--verde);font-variant-numeric:tabular-nums}
+
+  /* Línea de tiempo 90' con marcas de gol */
+  .timeline{position:relative;height:6px;background:var(--borde);border-radius:3px}
+  .timeline>i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--verde2),var(--verde));border-radius:3px;width:0}
+  .mark{position:absolute;top:-4px;width:14px;height:14px;translate:-50%;font-size:10px;
+    display:grid;place-items:center;color:var(--fondo);background:var(--verde);border-radius:50%;
+    transform-origin:center;opacity:0}
+  .mark.v{background:#f79457}
+
+  /* Campo con balón */
+  .field{position:relative;flex:1;border:2px solid rgba(47,226,122,.4);border-radius:10px;
+    background:radial-gradient(70% 90% at 50% 50%,#0c3320,#06170e 75%);overflow:hidden}
+  .field::before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:rgba(47,226,122,.3)}
+  .field::after{content:"";position:absolute;left:50%;top:50%;translate:-50% -50%;
+    width:26%;aspect-ratio:1;border:2px solid rgba(47,226,122,.3);border-radius:50%}
+  .ball{position:absolute;width:14px;height:14px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#fff,#c3ccd4);
+    box-shadow:0 2px 6px rgba(0,0,0,.5);transition:left .5s cubic-bezier(.4,0,.2,1),top .5s cubic-bezier(.4,0,.2,1)}
+  .flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(47,226,122,.35),transparent 60%);opacity:0}
+
+  /* Relato de eventos */
+  .feed{height:132px;overflow:hidden;background:rgba(9,12,11,.86);border:1px solid var(--borde);
+    border-radius:14px;padding:8px 12px;display:flex;flex-direction:column;gap:7px}
+  .ev{display:flex;gap:9px;align-items:flex-start;animation:in .35s ease}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .m{font-weight:800;font-size:12px;color:var(--verde);font-variant-numeric:tabular-nums;flex:0 0 30px}
+  .tx{font-size:12.5px;color:var(--texto);line-height:1.25}
+  .tx.gol{font-weight:800}
+  .etq{position:fixed;top:12px;left:14px;z-index:4;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(244,247,249,.35);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="etq">Partido 3 — Simulación</div>
+
+  <div class="head">
+    <div class="side">
+      <svg class="crest" viewBox="0 0 100 112"><defs><linearGradient id="gh" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#bdf7d3"/><stop offset="1" stop-color="#12a355"/></linearGradient></defs>
+        <path d="M50 3 L94 19 V57 C94 85 74 102 50 109 C26 102 6 85 6 57 V19 Z" fill="rgba(9,20,14,.94)" stroke="url(#gh)" stroke-width="4" stroke-linejoin="round"/>
+        <text x="50" y="55" text-anchor="middle" font-size="34" font-weight="800" fill="url(#gh)">U</text></svg>
+      <div class="nm">ULTIME FC</div>
+    </div>
+    <div class="mid">
+      <div class="sc"><span class="l" id="gl">0</span> <span style="color:var(--gris)">–</span> <span class="r" id="gv">0</span></div>
+      <div class="clk"><span class="live"></span><span id="clk">00'</span></div>
+    </div>
+    <div class="side r">
+      <svg class="crest" viewBox="0 0 100 112"><defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffd9a8"/><stop offset="1" stop-color="#c2410c"/></linearGradient></defs>
+        <path d="M50 3 L94 19 V57 C94 85 74 102 50 109 C26 102 6 85 6 57 V19 Z" fill="rgba(20,10,6,.94)" stroke="url(#ga)" stroke-width="4" stroke-linejoin="round"/>
+        <text x="50" y="55" text-anchor="middle" font-size="34" font-weight="800" fill="url(#ga)">R</text></svg>
+      <div class="nm">REAL CF</div>
+    </div>
+  </div>
+
+  <div class="timeline" id="tl"><i id="bar"></i></div>
+
+  <div class="field" id="field">
+    <div class="flash" id="flash"></div>
+    <div class="ball" id="ball" style="left:50%;top:50%"></div>
+  </div>
+
+  <div class="feed" id="feed"></div>
+
+<script>
+  let min=0, gl=0, gv=0;
+  const $=id=>document.getElementById(id);
+  const field=$('field'), ball=$('ball'), feed=$('feed');
+  const goles=[{m:18,t:'l',txt:'¡GOOOL de ULTIME FC! Remate de Bellingham al ángulo.'},
+               {m:37,t:'v',txt:'¡GOOOL de REAL CF! Definición en el contragolpe.'},
+               {m:64,t:'l',txt:'¡GOOOL de ULTIME FC! Cabezazo tras el córner.'},
+               {m:80,t:'v',txt:'¡GOOOL de REAL CF! Empate agónico.'}];
+  const frases=['Circula el balón por el medio.','Presión alta de ULTIME FC.','Recupera REAL CF y sale rápido.',
+    'Centro al área, despeja la defensa.','Falta en la mitad de la cancha.','Buen pase filtrado, no llega nadie.'];
+
+  function addEvent(m,txt,gol){
+    const e=document.createElement('div'); e.className='ev';
+    e.innerHTML=`<span class="m">${String(m).padStart(2,'0')}'</span><span class="tx ${gol?'gol':''}">${gol?'⚽ ':''}${txt}</span>`;
+    feed.prepend(e); while(feed.children.length>6) feed.lastChild.remove();
+  }
+  function mark(m,vis){
+    const d=document.createElement('div'); d.className='mark'+(vis?' v':'');
+    d.style.left=(m/90*100)+'%'; d.textContent='⚽'; $('tl').appendChild(d);
+    d.animate([{opacity:0,transform:'translateX(-50%) scale(0)'},{opacity:1,transform:'translateX(-50%) scale(1)'}],{duration:300,fill:'forwards'});
+  }
+  function moveBall(){ ball.style.left=(12+Math.random()*76)+'%'; ball.style.top=(14+Math.random()*72)+'%'; }
+  moveBall();
+
+  const tick=setInterval(()=>{
+    min++; $('clk').textContent=String(min).padStart(2,'0')+"'"; $('bar').style.width=(min/90*100)+'%';
+    if(min%2===0) moveBall();
+    const g=goles.find(g=>g.m===min);
+    if(g){ if(g.t==='l'){gl++;$('gl').textContent=gl;}else{gv++;$('gv').textContent=gv;}
+      addEvent(min,g.txt,true); mark(min,g.t==='v');
+      $('flash').animate([{opacity:.9},{opacity:0}],{duration:700});
+    } else if(min%6===0){ addEvent(min,frases[Math.floor(Math.random()*frases.length)],false); }
+    if(min>=90){ clearInterval(tick); $('clk').textContent='FIN'; addEvent(90,'Final del partido.',false); }
+  },220);
+</script>
+</body>
+</html>

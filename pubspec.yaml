@@ -26,5 +26,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - .env
     - assets/data/squad.json
     - assets/sounds/music/intro.mp3

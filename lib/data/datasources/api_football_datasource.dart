@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:contador_app/domain/entities/player.dart';
@@ -14,10 +15,27 @@ class ApiFootballDatasource {
   static const league = 140; // La Liga
   static const season = 2023; // última temporada del plan gratuito
 
-  // Planteles que pueblan el mercado: en las páginas "generales" de la liga
-  // casi todos vienen sin valoración (sin minutos jugados), en cambio los
-  // planteles de los equipos grandes traen notas reales.
-  static const marketTeams = [541, 529, 530]; // Real Madrid, Barça, Atleti
+  // Planteles que pueblan el mercado: se piden por equipo (no por la liga
+  // general, cuyas páginas traen muchos jugadores sin valoración). Con 16
+  // equipos de La Liga hay ~250-300 jugadores reales con nota.
+  static const marketTeams = [
+    541, // Real Madrid
+    529, // Barcelona
+    530, // Atlético de Madrid
+    531, // Athletic Club
+    548, // Real Sociedad
+    543, // Real Betis
+    533, // Villarreal
+    532, // Valencia
+    547, // Girona
+    536, // Sevilla
+    546, // Getafe
+    727, // Osasuna
+    538, // Celta de Vigo
+    728, // Rayo Vallecano
+    542, // Alavés
+    798, // Mallorca
+  ];
 
   final http.Client _client;
 
@@ -56,6 +74,13 @@ class ApiFootballDatasource {
     }
 
     final body = jsonDecode(res.body) as Map<String, dynamic>;
+
+    // Diagnóstico (solo en debug): confirma que la clave se cargó y qué devolvió.
+    if (kDebugMode) {
+      debugPrint('[API-Football] key=${_apiKey.length} chars · '
+          'status=${res.statusCode} · results=${body['results']} · '
+          'errors=${body['errors']}');
+    }
 
     // La API reporta cuota excedida u otros problemas en `errors`
     // aunque el status HTTP sea 200.
