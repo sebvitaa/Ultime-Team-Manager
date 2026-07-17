@@ -84,10 +84,11 @@ class HomeScreen extends ConsumerWidget {
                 subtitle: 'Próximamente',
               ),
               const SizedBox(height: 12),
-              const _MenuCard(
+              _MenuCard(
                 icon: Icons.sports_soccer,
                 title: 'Partido',
-                subtitle: 'Próximamente',
+                subtitle: 'Simula un partido de liga',
+                onTap: () => context.push('/match'),
               ),
             ],
           ),
