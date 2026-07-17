@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liga · Eliminatorias</title>
+<style>
+  :root{--verde:#2fe27a;--verde2:#12a355;--oro:#efc75d;--fondo:#02060a;
+        --carbon:#0d1411;--texto:#f4f7f9;--gris:#8b98a2;--borde:rgba(255,255,255,.10)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--texto);
+    background:radial-gradient(70% 60% at 50% 0%,#0a2a1a,#06140d 55%,#02060a);min-height:100vh;
+    padding:22px 16px 40px}
+
+  header{text-align:center;margin-bottom:20px}
+  .title{font-size:22px;font-weight:900;letter-spacing:1px}
+  .title b{color:var(--verde)}
+  .sub{color:var(--gris);font-size:12.5px;margin-top:5px}
+  .phase{display:inline-flex;gap:6px;margin-top:12px;background:var(--carbon);
+    border:1px solid var(--borde);border-radius:999px;padding:4px 5px}
+  .phase span{font-size:11px;font-weight:700;color:var(--gris);padding:5px 12px;border-radius:999px}
+  .phase span.on{background:var(--verde2);color:#04150d}
+
+  .bracket{display:flex;gap:18px;align-items:stretch;overflow-x:auto;padding-bottom:12px;
+    max-width:940px;margin:0 auto}
+  .round{min-width:186px;display:flex;flex-direction:column;flex:1}
+  .rlabel{text-align:center;font-size:11px;font-weight:800;letter-spacing:1.5px;
+    text-transform:uppercase;color:var(--gris);margin-bottom:12px}
+  .matches{flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:12px}
+
+  .match{background:var(--carbon);border:1px solid var(--borde);border-radius:10px;overflow:hidden}
+  .team{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;font-size:12.5px}
+  .team + .team{border-top:1px solid rgba(255,255,255,.06)}
+  .team span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .team b{font-weight:800;font-variant-numeric:tabular-nums;flex:0 0 auto}
+  .team span,.team b{color:var(--gris)}
+  .team.win span{color:var(--verde);font-weight:800}
+  .team.win b{color:var(--verde)}
+  .match.me{border-color:rgba(47,226,122,.45);box-shadow:0 0 0 1px rgba(47,226,122,.15)}
+
+  /* Campeón */
+  .champ .matches{justify-content:center}
+  .trophy-card{background:linear-gradient(180deg,rgba(239,199,93,.16),var(--carbon));
+    border:1px solid rgba(239,199,93,.5);border-radius:14px;padding:18px 14px;text-align:center;
+    box-shadow:0 0 30px rgba(239,199,93,.15)}
+  .trophy-card svg{width:46px;height:46px}
+  .champ-name{font-weight:900;font-size:17px;margin-top:8px;color:var(--texto)}
+  .champ-tag{color:var(--oro);font-size:10.5px;letter-spacing:2px;text-transform:uppercase;
+    font-weight:800;margin-top:4px}
+  .etq{position:fixed;top:10px;left:12px;font-size:10px;letter-spacing:2px;text-transform:uppercase;
+    color:rgba(244,247,249,.35);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="etq">Liga — Eliminatorias</div>
+  <header>
+    <div class="title">LIGA <b>ULTIME</b></div>
+    <div class="sub">Fase final · Elimina directa hasta la gran final</div>
+    <div class="phase">
+      <span>Grupos</span><span class="on">Cuartos</span><span class="on">Semis</span><span class="on">Final</span>
+    </div>
+  </header>
+
+  <div class="bracket" id="bracket"></div>
+
+<script>
+  const me='Ultime FC';
+  // cada partido: [[equipo, marcador, ganó], [equipo, marcador, ganó]]
+  const rondas = {
+    'Cuartos': [
+      [['Manchester City','2',true],['Arsenal','1',false]],
+      [['Real Madrid','1',false],['Ultime FC','2',true]],
+      [['Bayern München','3',true],['Liverpool','2',false]],
+      [['Barcelona','1 (4)',true],['Inter de Milán','1 (3)',false]],
+    ],
+    'Semis': [
+      [['Manchester City','1',false],['Ultime FC','2',true]],
+      [['Bayern München','0',false],['Barcelona','2',true]],
+    ],
+    'Final': [
+      [['Ultime FC','3',true],['Barcelona','2',false]],
+    ],
+  };
+
+  const bracket=document.getElementById('bracket');
+  const matchHtml=(m)=>{
+    const hasMe=m.some(t=>t[0]===me);
+    const rows=m.map(([eq,mk,win])=>
+      `<div class="team ${win?'win':''}"><span>${eq}</span><b>${mk}</b></div>`).join('');
+    return `<div class="match ${hasMe?'me':''}">${rows}</div>`;
+  };
+  for(const [nombre,partidos] of Object.entries(rondas)){
+    bracket.insertAdjacentHTML('beforeend',
+      `<div class="round">
+        <div class="rlabel">${nombre}</div>
+        <div class="matches">${partidos.map(matchHtml).join('')}</div>
+      </div>`);
+  }
+  // Columna del campeón
+  bracket.insertAdjacentHTML('beforeend',
+    `<div class="round champ">
+      <div class="rlabel">Campeón</div>
+      <div class="matches">
+        <div class="trophy-card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#efc75d" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/>
+            <path d="M17 5h2.4a2.4 2.4 0 0 1-2.4 2.4"/>
+            <path d="M7 5H4.6A2.4 2.4 0 0 0 7 7.4"/>
+            <path d="M12 13v3M9.5 20h5M10.3 20l.4-4h2.6l.4 4"/>
+          </svg>
+          <div class="champ-name">Ultime FC</div>
+          <div class="champ-tag">Campeón</div>
+        </div>
+      </div>
+    </div>`);
+</script>
+</body>
+</html>

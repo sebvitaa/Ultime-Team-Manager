@@ -17,45 +17,52 @@ class MatchScreen extends ConsumerWidget {
     final m = ref.watch(matchControllerProvider);
     final finished = m.phase == MatchPhase.finished;
 
-    return Scaffold(
-      backgroundColor: AppColors.fondo,
-      body: Stack(
-        children: [
-          Positioned.fill(child: CustomPaint(painter: _ArenaPainter())),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: Column(
-                children: [
-                  // Cronómetro
-                  _Clock(minute: m.minute, finished: finished),
-                  const SizedBox(height: 8),
-                  // Cara a cara
-                  Expanded(child: _Stage(state: m, naranja: _naranja)),
-                  const SizedBox(height: 8),
-                  _Timeline(events: m.events, minute: m.minute, naranja: _naranja),
-                  const SizedBox(height: 12),
-                  _Feed(events: m.events, naranja: _naranja),
-                  if (finished) ...[
+    return PopScope(
+      // No se puede salir mientras el partido está en juego (solo al terminar).
+      canPop: finished,
+      child: Scaffold(
+        backgroundColor: AppColors.fondo,
+        body: Stack(
+          children: [
+            Positioned.fill(child: CustomPaint(painter: _ArenaPainter())),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Column(
+                  children: [
+                    // Cronómetro
+                    _Clock(minute: m.minute, finished: finished),
                     const SizedBox(height: 8),
-                    _ResultBar(coins: m.coinsAwarded),
+                    // Cara a cara
+                    Expanded(child: _Stage(state: m, naranja: _naranja)),
+                    const SizedBox(height: 8),
+                    _Timeline(
+                        events: m.events, minute: m.minute, naranja: _naranja),
+                    const SizedBox(height: 12),
+                    _Feed(events: m.events, naranja: _naranja),
+                    if (finished) ...[
+                      const SizedBox(height: 8),
+                      _ResultBar(
+                          coins: m.coinsAwarded, fromLeague: m.fromLeague),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
-          ),
-          // Botón volver
-          Positioned(
-            top: 8,
-            left: 4,
-            child: SafeArea(
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: AppColors.texto),
-                onPressed: () => context.pop(),
+            // Botón volver: solo al terminar.
+            if (finished)
+              Positioned(
+                top: 8,
+                left: 4,
+                child: SafeArea(
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.texto),
+                    onPressed: () => context.pop(),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -386,7 +393,8 @@ class _Feed extends StatelessWidget {
 // ---------- Barra de resultado (al terminar) ----------
 class _ResultBar extends ConsumerWidget {
   final int coins;
-  const _ResultBar({required this.coins});
+  final bool fromLeague;
+  const _ResultBar({required this.coins, required this.fromLeague});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -414,26 +422,40 @@ class _ResultBar extends ConsumerWidget {
           ),
         ),
         const Spacer(),
-        TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: AppColors.gris,
-            visualDensity: VisualDensity.compact,
+        if (fromLeague)
+          // Partido de liga: el resultado ya se guardó, se vuelve a la liga.
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.pildora,
+              foregroundColor: const Color(0xFF05210F),
+              shape: const StadiumBorder(),
+              visualDensity: VisualDensity.compact,
+            ),
+            onPressed: () => context.pop(),
+            child: const Text('Continuar'),
+          )
+        else ...[
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.gris,
+              visualDensity: VisualDensity.compact,
+            ),
+            onPressed: () => context.pop(),
+            child: const Text('Salir'),
           ),
-          onPressed: () => context.pop(),
-          child: const Text('Salir'),
-        ),
-        const SizedBox(width: 4),
-        FilledButton(
-          style: FilledButton.styleFrom(
-            backgroundColor: AppColors.pildora,
-            foregroundColor: const Color(0xFF05210F),
-            shape: const StadiumBorder(),
-            visualDensity: VisualDensity.compact,
+          const SizedBox(width: 4),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.pildora,
+              foregroundColor: const Color(0xFF05210F),
+              shape: const StadiumBorder(),
+              visualDensity: VisualDensity.compact,
+            ),
+            onPressed: () =>
+                ref.read(matchControllerProvider.notifier).restart(),
+            child: const Text('Jugar de nuevo'),
           ),
-          onPressed: () =>
-              ref.read(matchControllerProvider.notifier).restart(),
-          child: const Text('Jugar de nuevo'),
-        ),
+        ],
       ],
     );
   }

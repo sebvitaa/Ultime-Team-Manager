@@ -7,9 +7,20 @@ import 'package:contador_app/data/league_teams.dart';
 import 'package:contador_app/domain/entities/match_event.dart';
 import 'package:contador_app/domain/entities/match_result.dart';
 import 'package:contador_app/presentation/providers/coins_provider.dart';
+import 'package:contador_app/presentation/providers/league_provider.dart';
 import 'package:contador_app/presentation/providers/squad_provider.dart';
 
 enum MatchPhase { playing, finished }
+
+/// Rival concreto para el próximo partido (lo pone la liga antes de ir a jugar).
+/// Si es null, la pantalla juega un amistoso contra un rival aleatorio.
+class MatchRequest {
+  final String rivalName;
+  final int rivalRating;
+  const MatchRequest({required this.rivalName, required this.rivalRating});
+}
+
+final matchRequestProvider = StateProvider<MatchRequest?>((ref) => null);
 
 /// Estado del partido que observa la pantalla. Los eventos van de más nuevo a
 /// más viejo (para pintar el relato con el último arriba).
@@ -24,6 +35,7 @@ class MatchState {
   final List<MatchEvent> events;
   final MatchPhase phase;
   final int coinsAwarded;
+  final bool fromLeague; // partido de liga (no amistoso)
 
   const MatchState({
     this.localName = '',
@@ -36,6 +48,7 @@ class MatchState {
     this.events = const [],
     this.phase = MatchPhase.playing,
     this.coinsAwarded = 0,
+    this.fromLeague = false,
   });
 
   MatchState copyWith({
@@ -57,6 +70,7 @@ class MatchState {
       events: events ?? this.events,
       phase: phase ?? this.phase,
       coinsAwarded: coinsAwarded ?? this.coinsAwarded,
+      fromLeague: fromLeague,
     );
   }
 }
@@ -69,6 +83,7 @@ final matchControllerProvider =
 
 class MatchController extends AutoDisposeNotifier<MatchState> {
   StreamSubscription<MatchSnapshot>? _sub;
+  bool _fromLeague = false;
 
   @override
   MatchState build() {
@@ -76,19 +91,33 @@ class MatchController extends AutoDisposeNotifier<MatchState> {
     return _newMatch();
   }
 
-  // Arranca un partido nuevo: elige rival, simula y reproduce minuto a minuto.
+  // Arranca un partido nuevo. Si la liga dejó un rival (matchRequest), juega
+  // contra ese; si no, contra un rival aleatorio (amistoso).
   MatchState _newMatch() {
     final rng = Random();
-    final rival = randomRival(rng, exclude: 'Real Madrid');
+    final req = ref.read(matchRequestProvider);
     final avg = ref.read(squadControllerProvider).averageRating;
     final ratingLocal = (avg >= 1 ? avg.round() : 75).clamp(1, 99);
     const localName = 'Ultime FC';
 
+    final String visitaName;
+    final int ratingVisita;
+    if (req != null) {
+      visitaName = req.rivalName;
+      ratingVisita = req.rivalRating;
+      _fromLeague = true;
+    } else {
+      final rival = randomRival(rng, exclude: 'Real Madrid');
+      visitaName = rival.name;
+      ratingVisita = rival.rating;
+      _fromLeague = false;
+    }
+
     final result = MatchSimulator.simulate(
       localName: localName,
       ratingLocal: ratingLocal,
-      visitaName: rival.name,
-      ratingVisita: rival.rating,
+      visitaName: visitaName,
+      ratingVisita: ratingVisita,
       rng: rng,
     );
 
@@ -106,22 +135,29 @@ class MatchController extends AutoDisposeNotifier<MatchState> {
 
     return MatchState(
       localName: localName,
-      visitaName: rival.name,
+      visitaName: visitaName,
       ratingLocal: ratingLocal,
-      ratingVisita: rival.rating,
+      ratingVisita: ratingVisita,
       phase: MatchPhase.playing,
+      fromLeague: _fromLeague,
     );
   }
 
-  // Al terminar reparte monedas (RF6) según el resultado del equipo local.
+  // Al terminar reparte monedas y, si es de liga, guarda el resultado.
   void _finish(MatchResult result) {
     final coins = _reward(result.golLocal, result.golVisita);
     ref.read(coinsProvider.notifier).earn(coins);
+    if (_fromLeague) {
+      ref
+          .read(leagueProvider.notifier)
+          .reportUltimeMatch(result.golLocal, result.golVisita);
+    }
     state = state.copyWith(phase: MatchPhase.finished, coinsAwarded: coins);
   }
 
-  // Vuelve a jugar (nuevo rival y nueva simulación).
+  // Vuelve a jugar (solo amistosos; en liga se usa "Continuar").
   void restart() {
+    if (_fromLeague) return;
     _sub?.cancel();
     state = _newMatch();
   }

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liga · Fase de grupos</title>
+<style>
+  :root{--verde:#2fe27a;--verde2:#12a355;--oro:#efc75d;--fondo:#02060a;
+        --carbon:#0d1411;--texto:#f4f7f9;--gris:#8b98a2;--borde:rgba(255,255,255,.10)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--texto);
+    background:radial-gradient(70% 60% at 50% 0%,#0a2a1a,#06140d 55%,#02060a);min-height:100vh;
+    padding:22px 16px 40px}
+
+  header{text-align:center;margin-bottom:22px}
+  .title{font-size:22px;font-weight:900;letter-spacing:1px}
+  .title b{color:var(--verde)}
+  .sub{color:var(--gris);font-size:12.5px;margin-top:5px;letter-spacing:.3px}
+  .phase{display:inline-flex;gap:6px;margin-top:12px;background:var(--carbon);
+    border:1px solid var(--borde);border-radius:999px;padding:4px 5px}
+  .phase span{font-size:11px;font-weight:700;color:var(--gris);padding:5px 12px;border-radius:999px}
+  .phase span.on{background:var(--verde2);color:#04150d}
+
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    max-width:820px;margin:0 auto}
+  .group{background:var(--carbon);border:1px solid var(--borde);border-radius:16px;
+    overflow:hidden}
+  .ghead{display:flex;align-items:center;justify-content:space-between;
+    padding:12px 14px;border-bottom:1px solid var(--borde)}
+  .ghead b{font-size:14px;font-weight:800;letter-spacing:1px}
+  .ghead small{color:var(--gris);font-size:11px}
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:9px 8px;text-align:center;font-size:13px}
+  th{color:var(--gris);font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+  td.eq{text-align:left;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+  td.pos{width:26px;color:var(--gris);font-weight:800}
+  td.pts{font-weight:900}
+  tr.row{border-top:1px solid rgba(255,255,255,.05)}
+  tr.q{background:rgba(47,226,122,.07)}
+  tr.q td.pos{color:var(--verde)}
+  tr.q td:first-child{box-shadow:inset 3px 0 0 var(--verde)}
+  tr.me td.eq{color:var(--verde)}
+  .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--verde);
+    margin-left:6px;vertical-align:middle}
+  .legend{max-width:820px;margin:16px auto 0;display:flex;align-items:center;gap:8px;
+    color:var(--gris);font-size:12px}
+  .legend i{width:10px;height:10px;border-radius:2px;background:var(--verde);display:inline-block}
+  .etq{position:fixed;top:10px;left:12px;font-size:10px;letter-spacing:2px;text-transform:uppercase;
+    color:rgba(244,247,249,.35);font-weight:700}
+</style>
+</head>
+<body>
+  <div class="etq">Liga — Fase de grupos</div>
+  <header>
+    <div class="title">LIGA <b>ULTIME</b></div>
+    <div class="sub">Fase de grupos · Clasifican los 2 primeros de cada grupo</div>
+    <div class="phase">
+      <span class="on">Grupos</span><span>Cuartos</span><span>Semis</span><span>Final</span>
+    </div>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="legend"><i></i> Clasificado a cuartos</div>
+
+<script>
+  // [nombre, PJ, DG, Pts, clasifica, esUltime]
+  const grupos = {
+    'Grupo A': [
+      ['Manchester City',3,'+6',9,true,false],
+      ['Ultime FC',3,'+1',6,true,true],
+      ['Napoli',3,'-2',3,false,false],
+      ['Tottenham',3,'-5',0,false,false],
+    ],
+    'Grupo B': [
+      ['Real Madrid',3,'+5',7,true,false],
+      ['Arsenal',3,'+2',6,true,false],
+      ['Juventus',3,'-1',3,false,false],
+      ['AC Milan',3,'-6',1,false,false],
+    ],
+    'Grupo C': [
+      ['Bayern München',3,'+7',9,true,false],
+      ['Inter de Milán',3,'0',4,true,false],
+      ['Atlético de Madrid',3,'-1',4,false,false],
+      ['Borussia Dortmund',3,'-6',2,false,false],
+    ],
+    'Grupo D': [
+      ['Barcelona',3,'+4',7,true,false],
+      ['Liverpool',3,'+3',6,true,false],
+      ['Paris Saint-Germain',3,'-2',3,false,false],
+      ['Bayer Leverkusen',3,'-5',1,false,false],
+    ],
+  };
+  const grid=document.getElementById('grid');
+  for(const [nombre,filas] of Object.entries(grupos)){
+    let rows='';
+    filas.forEach((f,i)=>{
+      const [eq,pj,dg,pts,q,me]=f;
+      rows+=`<tr class="row ${q?'q':''} ${me?'me':''}">
+        <td class="pos">${i+1}</td>
+        <td class="eq">${eq}${me?'<span class="dot"></span>':''}</td>
+        <td>${pj}</td><td>${dg}</td><td class="pts">${pts}</td></tr>`;
+    });
+    grid.insertAdjacentHTML('beforeend',
+      `<div class="group">
+        <div class="ghead"><b>${nombre.toUpperCase()}</b><small>3 fechas</small></div>
+        <table>
+          <tr><th>#</th><th style="text-align:left">Equipo</th><th>PJ</th><th>DG</th><th>Pts</th></tr>
+          ${rows}
+        </table>
+      </div>`);
+  }
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import 'package:contador_app/config/theme/app_colors.dart';
 import 'package:contador_app/presentation/providers/auth_provider.dart';
 import 'package:contador_app/presentation/screens/auth/login_screen.dart';
 import 'package:contador_app/presentation/screens/home/home_screen.dart';
+import 'package:contador_app/presentation/screens/league/league_screen.dart';
 import 'package:contador_app/presentation/screens/market/market_screen.dart';
 import 'package:contador_app/presentation/screens/match/match_screen.dart';
 import 'package:contador_app/presentation/screens/squad/squad_screen.dart';
@@ -43,6 +44,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/squad', builder: (_, _) => const SquadScreen()),
       GoRoute(path: '/market', builder: (_, _) => const MarketScreen()),
       GoRoute(path: '/match', builder: (_, _) => const MatchScreen()),
+      GoRoute(path: '/league', builder: (_, _) => const LeagueScreen()),
     ],
   );
 });

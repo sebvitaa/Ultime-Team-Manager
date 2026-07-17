@@ -7,6 +7,7 @@ class AppColors {
   static const verde = Color(0xFF2FE27A); // acento principal (líneas, foco)
   static const verde2 = Color(0xFF12A355); // verde profundo (degradados)
   static const pildora = Color(0xFF4BD46A); // botón "Entrar"
+  static const oro = Color(0xFFEFC75D); // campeón de la liga
 
   static const fondo = Color(0xFF02060A); // fondo casi negro
   static const carbon = Color(0xE60A0D0C); // tarjeta carbón mate (~90% opaca)

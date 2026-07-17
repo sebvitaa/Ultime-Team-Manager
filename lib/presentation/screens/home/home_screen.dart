@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:contador_app/config/theme/app_colors.dart';
 import 'package:contador_app/presentation/providers/auth_provider.dart';
+import 'package:contador_app/presentation/providers/match_provider.dart';
 import 'package:contador_app/presentation/widgets/coins_chip.dart';
 import 'package:contador_app/presentation/widgets/crest_logo.dart';
 
@@ -78,17 +79,21 @@ class HomeScreen extends ConsumerWidget {
                 onTap: () => context.push('/market'),
               ),
               const SizedBox(height: 12),
-              const _MenuCard(
+              _MenuCard(
                 icon: Icons.emoji_events,
                 title: 'Liga',
-                subtitle: 'Próximamente',
+                subtitle: 'Grupos y eliminatorias',
+                onTap: () => context.push('/league'),
               ),
               const SizedBox(height: 12),
               _MenuCard(
                 icon: Icons.sports_soccer,
                 title: 'Partido',
-                subtitle: 'Simula un partido de liga',
-                onTap: () => context.push('/match'),
+                subtitle: 'Amistoso rápido',
+                onTap: () {
+                  ref.read(matchRequestProvider.notifier).state = null;
+                  context.push('/match');
+                },
               ),
             ],
           ),
