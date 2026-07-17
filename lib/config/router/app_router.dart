@@ -1,6 +1,7 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:contador_app/config/theme/app_colors.dart';
 import 'package:contador_app/presentation/providers/auth_provider.dart';
 import 'package:contador_app/presentation/screens/auth/login_screen.dart';
 import 'package:contador_app/presentation/screens/home/home_screen.dart';
@@ -21,6 +22,8 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/login',
     refreshListenable: refresh,
+    // Ruta inexistente -> pantalla de "no encontrada".
+    errorBuilder: (context, state) => const _NotFoundScreen(),
     redirect: (context, state) {
       final status = ref.read(authControllerProvider).status;
 
@@ -43,3 +46,44 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+/// Pantalla simple para rutas inexistentes: un texto y un botón al login.
+class _NotFoundScreen extends StatelessWidget {
+  const _NotFoundScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.fondo,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Ruta no encontrada',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColors.texto,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.pildora,
+                  foregroundColor: const Color(0xFF05210F),
+                  shape: const StadiumBorder(),
+                ),
+                onPressed: () => context.go('/login'),
+                child: const Text('Ir al login'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
