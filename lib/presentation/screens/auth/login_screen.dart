@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:contador_app/config/theme/app_colors.dart';
 import 'package:contador_app/presentation/providers/auth_provider.dart';
 import 'package:contador_app/presentation/widgets/crest_logo.dart';
+import 'package:contador_app/presentation/widgets/intro_music.dart';
 import 'package:contador_app/presentation/widgets/pitch_background.dart';
 
 /// Pantalla de intro / login: tarjeta estilo EA FC sobre la cancha animada.
@@ -100,6 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
           ),
+          const IntroMusic(), // música de intro (loop) + botón de silencio
         ],
       ),
     );
