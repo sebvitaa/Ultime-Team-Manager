@@ -8,6 +8,7 @@ import 'package:contador_app/presentation/providers/league_provider.dart';
 import 'package:contador_app/presentation/providers/match_provider.dart';
 
 const _kUltime = 'Ultime FC';
+const _maxW = 560.0;
 
 /// Liga jugable (RF6): juegas tu partido, se simula el resto y avanza por fases.
 class LeagueScreen extends ConsumerWidget {
@@ -56,13 +57,21 @@ class LeagueScreen extends ConsumerWidget {
             ),
           ),
         ),
-        body: TabBarView(
+        // Cuerpo + barra de acción en una Column (no bottomNavigationBar, que
+        // se descolocaba en pantallas anchas).
+        body: Column(
           children: [
-            _GroupsView(data),
-            _BracketView(data),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _GroupsView(data),
+                  _BracketView(data),
+                ],
+              ),
+            ),
+            _ActionBar(data),
           ],
         ),
-        bottomNavigationBar: _ActionBar(data),
       ),
     );
   }
@@ -84,16 +93,22 @@ class _PhaseStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const labels = ['Grupos', 'Cuartos', 'Semis', 'Final'];
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
-      child: Row(
-        children: [
-          for (var i = 0; i < labels.length; i++) ...[
-            Expanded(child: _pill(labels[i], i)),
-            if (i < labels.length - 1)
-              const Icon(Icons.chevron_right, size: 14, color: AppColors.gris),
-          ],
-        ],
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _maxW),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
+          child: Row(
+            children: [
+              for (var i = 0; i < labels.length; i++) ...[
+                Expanded(child: _pill(labels[i], i)),
+                if (i < labels.length - 1)
+                  const Icon(Icons.chevron_right,
+                      size: 14, color: AppColors.gris),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -127,7 +142,7 @@ class _PhaseStepper extends StatelessWidget {
   }
 }
 
-// ---------------- Barra inferior: Jugar / Campeón ----------------
+// ---------------- Barra de acción: Jugar / Campeón ----------------
 class _ActionBar extends ConsumerWidget {
   final LeagueState data;
   const _ActionBar(this.data);
@@ -136,70 +151,86 @@ class _ActionBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final next = data.next;
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      width: double.infinity,
       decoration: const BoxDecoration(
         color: AppColors.carbon,
         border: Border(top: BorderSide(color: AppColors.borde)),
       ),
       child: SafeArea(
         top: false,
-        child: next != null
-            ? Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('SIGUIENTE',
-                            style: TextStyle(
-                                color: AppColors.gris,
-                                fontSize: 10,
-                                letterSpacing: 1)),
-                        const SizedBox(height: 2),
-                        Text('Ultime FC  vs  ${next.rival.name}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                color: AppColors.texto,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800)),
-                        Text(next.label,
-                            style: const TextStyle(
-                                color: AppColors.gris, fontSize: 11)),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.pildora,
-                      foregroundColor: const Color(0xFF05210F),
-                      shape: const StadiumBorder(),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 22, vertical: 12),
-                    ),
-                    onPressed: () {
-                      ref.read(matchRequestProvider.notifier).state =
-                          MatchRequest(
-                        rivalName: next.rival.name,
-                        rivalRating: next.rival.rating,
-                      );
-                      context.push('/match');
-                    },
-                    child: const Text('Jugar',
-                        style: TextStyle(fontWeight: FontWeight.w800)),
-                  ),
-                ],
-              )
-            : _EndBar(data),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: _maxW),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              child: next != null
+                  ? _NextRow(next: next)
+                  : _EndRow(data: data),
+            ),
+          ),
+        ),
       ),
     );
   }
 }
 
-class _EndBar extends ConsumerWidget {
+class _NextRow extends ConsumerWidget {
+  final UltimeFixture next;
+  const _NextRow({required this.next});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('SIGUIENTE',
+                  style: TextStyle(
+                      color: AppColors.gris, fontSize: 10, letterSpacing: 1)),
+              const SizedBox(height: 2),
+              Text('Ultime FC  vs  ${next.rival.name}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      color: AppColors.texto,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800)),
+              Text(next.label,
+                  style:
+                      const TextStyle(color: AppColors.gris, fontSize: 11)),
+            ],
+          ),
+        ),
+        const SizedBox(width: 12),
+        FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: AppColors.pildora,
+            foregroundColor: const Color(0xFF05210F),
+            shape: const StadiumBorder(),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24, vertical: 13),
+          ),
+          onPressed: () {
+            ref.read(matchRequestProvider.notifier).state = MatchRequest(
+              rivalName: next.rival.name,
+              rivalRating: next.rival.rating,
+            );
+            context.push('/match');
+          },
+          child: const Text('Jugar',
+              style: TextStyle(fontWeight: FontWeight.w800)),
+        ),
+      ],
+    );
+  }
+}
+
+class _EndRow extends ConsumerWidget {
   final LeagueState data;
-  const _EndBar(this.data);
+  const _EndRow({required this.data});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -212,6 +243,7 @@ class _EndBar extends ConsumerWidget {
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(youWon ? '¡Eres campeón!' : 'Campeón: $champ',
                   maxLines: 1,
@@ -251,28 +283,32 @@ class _GroupsView extends StatelessWidget {
     final fecha = data.phase == LeaguePhase.groups
         ? 'Fase de grupos · ${data.matchday} de 3 fechas jugadas'
         : 'Fase de grupos finalizada';
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 560),
-        child: ListView(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 24),
-      children: [
-        Row(
-          children: [
-            Container(width: 10, height: 10, color: AppColors.verde),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(fecha,
-                  style: const TextStyle(color: AppColors.gris, fontSize: 12)),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        for (final g in data.groups) ...[
-          _GroupCard(g),
-          const SizedBox(height: 12),
-        ],
-      ],
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: _maxW),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Container(width: 10, height: 10, color: AppColors.verde),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(fecha,
+                        style: const TextStyle(
+                            color: AppColors.gris, fontSize: 12)),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              for (final g in data.groups) ...[
+                _GroupCard(g),
+                const SizedBox(height: 12),
+              ],
+            ],
+          ),
         ),
       ),
     );
@@ -328,18 +364,21 @@ class _HeaderRow extends StatelessWidget {
         fontSize: 10.5,
         fontWeight: FontWeight.w700,
         letterSpacing: .5);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: Row(
-        children: const [
+        children: [
           SizedBox(width: 22, child: Text('#', style: st)),
           Expanded(child: Text('EQUIPO', style: st)),
           SizedBox(
-              width: 28, child: Text('PJ', style: st, textAlign: TextAlign.center)),
+              width: 28,
+              child: Text('PJ', style: st, textAlign: TextAlign.center)),
           SizedBox(
-              width: 36, child: Text('DG', style: st, textAlign: TextAlign.center)),
+              width: 36,
+              child: Text('DG', style: st, textAlign: TextAlign.center)),
           SizedBox(
-              width: 30, child: Text('PTS', style: st, textAlign: TextAlign.center)),
+              width: 30,
+              child: Text('PTS', style: st, textAlign: TextAlign.center)),
         ],
       ),
     );
@@ -517,7 +556,6 @@ class _MatchCard extends StatelessWidget {
   Widget _row(LeagueTeam team, int? goals, int pens, bool win) {
     final played = goals != null;
     final score = !played ? '–' : (tie.onPens ? '$goals ($pens)' : '$goals');
-    final color = win ? AppColors.verde : (played ? AppColors.gris : AppColors.gris);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 9),
       child: Row(
@@ -534,7 +572,9 @@ class _MatchCard extends StatelessWidget {
           const SizedBox(width: 8),
           Text(score,
               style: TextStyle(
-                  color: color, fontSize: 12.5, fontWeight: FontWeight.w800)),
+                  color: win ? AppColors.verde : AppColors.gris,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w800)),
         ],
       ),
     );

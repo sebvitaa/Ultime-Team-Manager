@@ -27,6 +27,23 @@ class PlayerCard extends StatelessWidget {
   Color get _accent =>
       player.rating >= 85 ? AppColors.pildora : AppColors.verde2;
 
+  // Foto real del jugador (photoUrl); si falta o falla, icono de reserva.
+  Widget _avatar(double size) {
+    final fallback =
+        Icon(Icons.person, color: AppColors.gris, size: size * 0.62);
+    final url = player.photoUrl;
+    if (url == null || url.isEmpty) return fallback;
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      width: size,
+      height: size,
+      errorBuilder: (_, _, _) => fallback,
+      loadingBuilder: (context, child, progress) =>
+          progress == null ? child : fallback,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = heightFor(width);
@@ -83,16 +100,13 @@ class PlayerCard extends StatelessWidget {
               Container(
                 width: avatarSize,
                 height: avatarSize,
+                clipBehavior: Clip.antiAlias, // recorta la foto al círculo
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.fondo,
                   border: Border.all(color: AppColors.borde),
                 ),
-                child: Icon(
-                  Icons.person,
-                  color: AppColors.gris,
-                  size: avatarSize * 0.62,
-                ),
+                child: _avatar(avatarSize),
               ),
               const Spacer(),
               // Nombre y apellido en 2 líneas centradas, para que el nombre
