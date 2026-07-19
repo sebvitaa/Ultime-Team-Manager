@@ -18,12 +18,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
+  final _clubCtrl = TextEditingController();
   bool _obscure = true;
+  bool _isRegister = false; // false = iniciar sesión, true = registrarse
 
   @override
   void dispose() {
     _emailCtrl.dispose();
     _passCtrl.dispose();
+    _clubCtrl.dispose();
     super.dispose();
   }
 
@@ -46,9 +49,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
 
-    final ok = await ref
-        .read(authControllerProvider.notifier)
-        .signIn(_emailCtrl.text, _passCtrl.text);
+    final notifier = ref.read(authControllerProvider.notifier);
+    final ok = _isRegister
+        ? await notifier.signUp(
+            _emailCtrl.text, _passCtrl.text, _clubCtrl.text)
+        : await notifier.signIn(_emailCtrl.text, _passCtrl.text);
 
     if (!ok && mounted) {
       final msg = ref.read(authControllerProvider).errorMessage ?? 'Error';
@@ -141,12 +146,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Inicia sesión para gestionar tu club',
+            Text(
+              _isRegister
+                  ? 'Crea tu cuenta y funda tu club'
+                  : 'Inicia sesión para gestionar tu club',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.gris, fontSize: 12.5),
+              style: const TextStyle(color: AppColors.gris, fontSize: 12.5),
             ),
             const SizedBox(height: 24),
+            if (_isRegister) ...[
+              TextFormField(
+                controller: _clubCtrl,
+                enabled: !isSubmitting,
+                textInputAction: TextInputAction.next,
+                style: const TextStyle(color: AppColors.texto),
+                decoration: _dec('Nombre del club', Icons.shield_outlined),
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? 'Ponle nombre a tu club'
+                    : null,
+              ),
+              const SizedBox(height: 14),
+            ],
             TextFormField(
               controller: _emailCtrl,
               enabled: !isSubmitting,
@@ -205,21 +225,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           color: Color(0xFF05210F),
                         ),
                       )
-                    : const Row(
+                    : Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Entrar'),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward, size: 18),
+                          Text(_isRegister ? 'Crear cuenta' : 'Entrar'),
+                          const SizedBox(width: 8),
+                          Icon(
+                            _isRegister
+                                ? Icons.person_add_alt_1
+                                : Icons.arrow_forward,
+                            size: 18,
+                          ),
                         ],
                       ),
               ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Demo: demo@ultime.com / 123456',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Color(0xFF6F7C84), fontSize: 11),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: isSubmitting
+                  ? null
+                  : () => setState(() => _isRegister = !_isRegister),
+              child: Text(
+                _isRegister
+                    ? '¿Ya tienes cuenta? Inicia sesión'
+                    : '¿No tienes cuenta? Regístrate',
+                style: const TextStyle(
+                  color: AppColors.verde,
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ],
         ),

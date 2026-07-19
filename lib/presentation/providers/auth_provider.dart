@@ -1,12 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:contador_app/domain/entities/app_user.dart';
 import 'package:contador_app/domain/repositories/auth_repository.dart';
-import 'package:contador_app/data/repositories/auth_repository_local.dart';
+import 'package:contador_app/data/repositories/auth_repository_supabase.dart';
 
-// 1) Provider del repositorio. Para pasar a online, cambia SOLO esta línea
-//    por AuthRepositorySupabase().
+// 1) Provider del repositorio: Supabase Auth (login/registro reales).
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepositoryLocal();
+  return AuthRepositorySupabase();
 });
 
 // 2) Estados posibles de la sesión.
@@ -69,6 +68,25 @@ class AuthController extends Notifier<AuthState> {
     state = state.copyWith(isSubmitting: true); // enciende el spinner
     try {
       final user = await _repo.signIn(email: email, password: password);
+      state = state.copyWith(
+        status: AuthStatus.authenticated,
+        user: user,
+        isSubmitting: false,
+      );
+      return true;
+    } on AuthException catch (e) {
+      state = state.copyWith(isSubmitting: false, errorMessage: e.message);
+      return false;
+    }
+  }
+
+  // Registro. Devuelve true si quedó logueado; si hace falta confirmar el
+  // correo (o hay error), deja el mensaje en errorMessage y devuelve false.
+  Future<bool> signUp(String email, String password, String clubName) async {
+    state = state.copyWith(isSubmitting: true);
+    try {
+      final user = await _repo.signUp(
+          email: email, password: password, clubName: clubName);
       state = state.copyWith(
         status: AuthStatus.authenticated,
         user: user,

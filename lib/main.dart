@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:contador_app/config/router/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Carga la clave de API-Football desde .env (empaquetado como asset).
-  // Si falta o falla, la app arranca igual y las llamadas a la API se degradan.
+  // Carga las claves desde .env (empaquetado como asset). Si falta o falla, la
+  // app arranca igual y las funciones que dependen de red se degradan.
   try {
     await dotenv.load();
   } catch (e) {
     debugPrint('No se pudo cargar .env: $e');
+  }
+  try {
+    await Supabase.initialize(
+      url: dotenv.env['SUPABASE_URL'] ?? '',
+      publishableKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+    );
+  } catch (e) {
+    debugPrint('No se pudo inicializar Supabase: $e');
   }
   runApp(const ProviderScope(child: MyApp()));
 }

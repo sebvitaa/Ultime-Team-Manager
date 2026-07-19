@@ -2,12 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:contador_app/domain/entities/player.dart';
 import 'package:contador_app/domain/entities/squad.dart';
 import 'package:contador_app/domain/repositories/squad_repository.dart';
-import 'package:contador_app/data/repositories/squad_repository_local.dart';
+import 'package:contador_app/data/repositories/squad_repository_supabase.dart';
 
-// 1) Provider del repositorio. Para pasar a online, cambia SOLO esta línea
-//    por SquadRepositorySupabase().
+// 1) Provider del repositorio: la plantilla vive en Supabase (user_jugadores).
 final squadRepositoryProvider = Provider<SquadRepository>((ref) {
-  return SquadRepositoryLocal();
+  return SquadRepositorySupabase();
 });
 
 // 2) El estado inmutable que observa la UI.

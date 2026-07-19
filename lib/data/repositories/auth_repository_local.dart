@@ -42,6 +42,15 @@ class AuthRepositoryLocal implements AuthRepository {
   }
 
   @override
+  Future<AppUser> signUp({
+    required String email,
+    required String password,
+    String? clubName,
+  }) async {
+    throw const AuthException('El registro requiere conexión (Supabase)');
+  }
+
+  @override
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_kUserId);
