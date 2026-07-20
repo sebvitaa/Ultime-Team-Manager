@@ -10,7 +10,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ultime_team_manager/main.dart';
 
+import 'helpers/supabase_test_helper.dart';
+
 void main() {
+  // El router construye authController, que necesita una instancia de Supabase.
+  setUpAll(initTestSupabase);
+
   testWidgets('App boots into the login screen', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const ProviderScope(child: MyApp()));

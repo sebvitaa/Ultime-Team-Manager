@@ -97,8 +97,7 @@ class MatchController extends AutoDisposeNotifier<MatchState> {
   MatchState _newMatch() {
     final rng = Random();
     final req = ref.read(matchRequestProvider);
-    final avg = ref.read(squadControllerProvider).averageRating;
-    final ratingLocal = (avg >= 1 ? avg.round() : 75).clamp(1, 99);
+    final ratingLocal = ref.read(squadControllerProvider).teamRating;
     final localName = ref.read(teamNameProvider);
 
     final String visitaName;

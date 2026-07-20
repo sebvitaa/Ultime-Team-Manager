@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,6 +11,10 @@ final coinsProvider =
 
 class CoinsController extends Notifier<int> {
   SupabaseClient get _db => Supabase.instance.client;
+
+  // Se pone en true en cuanto earn()/spend() muta el estado localmente, para
+  // que un _load() en vuelo no pise la mutación con el valor viejo del server.
+  bool _touched = false;
 
   @override
   int build() {
@@ -26,11 +31,11 @@ class CoinsController extends Notifier<int> {
           .select('monedas')
           .eq('id', uid)
           .maybeSingle();
-      if (row != null && row['monedas'] != null) {
-        state = row['monedas'] as int;
-      }
-    } catch (_) {
+      final coins = (row?['monedas'] as num?)?.toInt();
+      if (coins != null && !_touched) state = coins;
+    } catch (e) {
       // Sin conexión / perfil aún no listo: se queda con el valor por defecto.
+      debugPrint('coins _load failed: $e');
     }
   }
 
@@ -39,18 +44,22 @@ class CoinsController extends Notifier<int> {
     if (uid == null) return;
     try {
       await _db.from('profiles').update({'monedas': state}).eq('id', uid);
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('coins _persist failed: $e');
+    }
   }
 
   // Devuelve false si no alcanzan las monedas (no se descuenta nada).
   bool spend(int amount) {
     if (amount > state) return false;
+    _touched = true;
     state -= amount;
     _persist();
     return true;
   }
 
   void earn(int amount) {
+    _touched = true;
     state += amount;
     _persist();
   }

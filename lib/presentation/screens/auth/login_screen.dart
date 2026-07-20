@@ -45,6 +45,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return null;
   }
 
+  String? _validateClubName(String? value) {
+    final text = value?.trim() ?? '';
+    if (text.isEmpty) return 'Ponle nombre a tu club';
+    if (text.length > 30) return 'Máximo 30 caracteres';
+    return null;
+  }
+
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
@@ -161,9 +168,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 textInputAction: TextInputAction.next,
                 style: const TextStyle(color: AppColors.texto),
                 decoration: _dec('Nombre del club', Icons.shield_outlined),
-                validator: (v) => (v == null || v.trim().isEmpty)
-                    ? 'Ponle nombre a tu club'
-                    : null,
+                validator: _validateClubName,
               ),
               const SizedBox(height: 14),
             ],

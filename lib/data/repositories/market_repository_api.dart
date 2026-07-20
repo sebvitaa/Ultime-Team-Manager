@@ -12,6 +12,11 @@ import 'package:ultime_team_manager/domain/repositories/market_repository.dart';
 class MarketRepositoryApi implements MarketRepository {
   static const _ttl = Duration(hours: 24);
 
+  // Tope de entradas de caché de búsqueda que se conservan; al superarlo se
+  // desaloja la más antigua (por orden de uso) para no crecer sin límite.
+  static const _maxSearchCacheEntries = 20;
+  static const _searchIndexKey = 'market_cache_search_index';
+
   final ApiFootballDatasource _api;
 
   MarketRepositoryApi({ApiFootballDatasource? api})
@@ -51,10 +56,37 @@ class MarketRepositoryApi implements MarketRepository {
   }
 
   @override
-  Future<List<Player>> searchPlayers(String query) => _cached(
-        'market_cache_search_${query.trim().toLowerCase()}',
-        () => _api.searchPlayers(query),
-      );
+  Future<List<Player>> searchPlayers(String query) async {
+    final key = 'market_cache_search_${query.trim().toLowerCase()}';
+    final players = await _cached(key, () => _api.searchPlayers(query));
+    await _touchSearchIndex(key);
+    return players;
+  }
+
+  // Registra `key` como usada recién ahora y, si el índice supera el tope,
+  // desaloja las entradas más antiguas (índice + su caché) para acotar el
+  // crecimiento de SharedPreferences.
+  Future<void> _touchSearchIndex(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    final index = _readSearchIndex(prefs);
+    index.remove(key);
+    index.add(key);
+    while (index.length > _maxSearchCacheEntries) {
+      final oldest = index.removeAt(0);
+      await prefs.remove(oldest);
+    }
+    await prefs.setString(_searchIndexKey, jsonEncode(index));
+  }
+
+  List<String> _readSearchIndex(SharedPreferences prefs) {
+    final raw = prefs.getString(_searchIndexKey);
+    if (raw == null) return <String>[];
+    try {
+      return (jsonDecode(raw) as List<dynamic>).cast<String>();
+    } catch (_) {
+      return <String>[];
+    }
+  }
 
   Future<List<Player>> _cached(
     String key,

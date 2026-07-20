@@ -52,13 +52,16 @@ class AuthRepositorySupabase implements AuthRepository {
     String? clubName,
   }) async {
     try {
+      final trimmedClubName = clubName?.trim();
       final res = await _auth.signUp(
         email: email.trim(),
         password: password,
         data: {
           'apodo': email.split('@').first,
-          if (clubName != null && clubName.trim().isNotEmpty)
-            'nombre_equipo': clubName.trim(),
+          if (trimmedClubName != null && trimmedClubName.isNotEmpty)
+            'nombre_equipo': trimmedClubName.length > 30
+                ? trimmedClubName.substring(0, 30)
+                : trimmedClubName,
         },
       );
       final u = res.user;

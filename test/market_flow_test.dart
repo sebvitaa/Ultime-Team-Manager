@@ -1,7 +1,4 @@
 // Flujo de COMPRA del mercado con un repositorio falso (sin red).
-// La venta vive en market_sell_flow_test.dart: los tests que escriben en
-// SharedPreferences contaminan la carga de assets del test siguiente dentro
-// del mismo archivo (limitación de flutter_test), así que van separados.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,8 +10,11 @@ import 'package:ultime_team_manager/presentation/providers/market_provider.dart'
 import 'package:ultime_team_manager/presentation/providers/squad_provider.dart';
 
 import 'helpers/market_test_helper.dart';
+import 'helpers/supabase_test_helper.dart';
 
 void main() {
+  // coins/squad se apoyan en Supabase.instance; sin sesión degradan a memoria.
+  setUpAll(initTestSupabase);
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   testWidgets('no se puede comprar sin monedas suficientes', (tester) async {

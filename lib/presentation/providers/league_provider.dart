@@ -33,6 +33,34 @@ class LeagueController extends Notifier<LeagueState> {
   @override
   LeagueState build() {
     _init();
+
+    // Ordering dependency: _init() reads teamNameProvider synchronously to
+    // capture _ultimeName. If the League screen is opened before the async
+    // auth session restore finishes, teamNameProvider still returns the
+    // default kDefaultTeamName ('Ultime FC') and the league gets seeded with
+    // the wrong team name. Once the session resolves, teamNameProvider
+    // emits the real name, so we listen for that and re-seed the league
+    // (regenerate) to pick it up.
+    //
+    // Guard: only regenerate while the league is still "pristine" (no
+    // matchday played, still in the groups phase, not eliminated, no
+    // champion yet). Once the user has actually played, wiping the league
+    // out from under them would be a much worse bug than a wrong name, so
+    // a late name resolution after that point is simply ignored. We also
+    // ignore updates that fall back to kDefaultTeamName (e.g. a logout)
+    // to avoid overwriting an already-resolved real name with the default.
+    // leagueProvider has no autoDispose, so this listener lives for the
+    // whole app session — that's intended, not a leak.
+    ref.listen<String>(teamNameProvider, (prev, next) {
+      final pristine = _matchday == 0 &&
+          _phase == LeaguePhase.groups &&
+          !_eliminated &&
+          _champion == null;
+      if (pristine && next != _ultimeName && next != kDefaultTeamName) {
+        regenerate();
+      }
+    });
+
     return _snapshot();
   }
 
@@ -60,9 +88,11 @@ class LeagueController extends Notifier<LeagueState> {
 
   void _init() {
     _ultimeName = ref.read(teamNameProvider);
-    final avg = ref.read(squadControllerProvider).averageRating;
-    final rating = (avg >= 1 ? avg.round() : 75).clamp(1, 99);
-    _ultime = LeagueTeam(name: _ultimeName, country: '—', rating: rating);
+    _ultime = LeagueTeam(
+      name: _ultimeName,
+      country: '—',
+      rating: ref.read(squadControllerProvider).teamRating,
+    );
 
     final teams = <LeagueTeam>[_ultime, ...kLeagueTeams]..shuffle(_rng);
     _groups = [

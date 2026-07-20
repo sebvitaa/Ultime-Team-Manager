@@ -8,6 +8,8 @@ import 'package:ultime_team_manager/presentation/providers/squad_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'helpers/supabase_test_helper.dart';
+
 // Squad falso: evita cargar assets; deja media 0 -> la liga usa 75 por defecto.
 class _FakeSquad extends SquadController {
   @override
@@ -15,6 +17,9 @@ class _FakeSquad extends SquadController {
 }
 
 void main() {
+  // leagueProvider -> teamNameProvider -> authController necesita Supabase.
+  setUpAll(initTestSupabase);
+
   group('LeagueSim', () {
     test('pens nunca termina en empate', () {
       final r = Random(2);

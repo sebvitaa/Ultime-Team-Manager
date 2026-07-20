@@ -30,6 +30,12 @@ class SquadState {
     return sum / players.length;
   }
 
+  // Rating de equipo derivado de averageRating: 75 por defecto si aún no hay
+  // datos (< 1), redondeado y acotado a [1, 99]. Único punto de cálculo para
+  // que league_provider y match_provider no dupliquen esta fórmula.
+  int get teamRating =>
+      (averageRating >= 1 ? averageRating.round() : 75).clamp(1, 99);
+
   // Suplentes disponibles para la misma LÍNEA que [player] (def/med/del/por):
   // los comprados en el mercado traen solo su línea, así cualquier defensa
   // puede cubrir cualquier puesto de la defensa, etc.

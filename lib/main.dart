@@ -11,7 +11,7 @@ Future<void> main() async {
   try {
     await dotenv.load();
   } catch (e) {
-    debugPrint('No se pudo cargar .env: $e');
+    debugPrint('dotenv.load failed: $e');
   }
   try {
     await Supabase.initialize(
@@ -19,7 +19,7 @@ Future<void> main() async {
       publishableKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
     );
   } catch (e) {
-    debugPrint('No se pudo inicializar Supabase: $e');
+    debugPrint('Supabase.initialize failed: $e');
   }
   runApp(const ProviderScope(child: MyApp()));
 }

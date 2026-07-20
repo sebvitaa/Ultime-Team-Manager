@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:ultime_team_manager/domain/entities/player.dart';
 import 'package:ultime_team_manager/domain/entities/squad.dart';
@@ -51,12 +52,15 @@ class SquadRepositorySupabase implements SquadRepository {
       final r = row as Map<String, dynamic>;
       final j = r['jugadores'] as Map<String, dynamic>?;
       if (j == null) continue; // jugador borrado del catálogo
-      final slot = (r['slot'] as num).toInt();
+      final slot = (r['slot'] as num?)?.toInt();
+      if (slot == null) continue; // fila con slot corrupto/nulo
       if (slot < _benchBase) {
         final pos = _formation[slot.clamp(0, _formation.length - 1)];
-        starters.add(_toPlayer(j, override: pos));
+        final player = _tryToPlayer(j, override: pos);
+        if (player != null) starters.add(player);
       } else {
-        bench.add(_toPlayer(j));
+        final player = _tryToPlayer(j);
+        if (player != null) bench.add(player);
       }
     }
     return Squad(starters: starters, bench: bench);
@@ -67,8 +71,8 @@ class SquadRepositorySupabase implements SquadRepository {
     final uid = _uid;
     if (uid == null) return;
     try {
-      // Se reescribe la plantilla completa (simple y consistente a esta escala).
-      await _db.from('user_jugadores').delete().eq('user_id', uid);
+      // Upsert de la plantilla nueva y luego borrado de lo que quedó obsoleto,
+      // así nunca queda la tabla vacía si la conexión se cae a mitad de camino.
       final rows = <Map<String, dynamic>>[
         for (var i = 0; i < squad.starters.length; i++)
           {'user_id': uid, 'jugador_id': squad.starters[i].id, 'slot': i},
@@ -79,9 +83,22 @@ class SquadRepositorySupabase implements SquadRepository {
             'slot': _benchBase + i,
           },
       ];
-      if (rows.isNotEmpty) await _db.from('user_jugadores').insert(rows);
-    } catch (_) {
+      if (rows.isNotEmpty) {
+        await _db
+            .from('user_jugadores')
+            .upsert(rows, onConflict: 'user_id,jugador_id');
+        final ids = rows.map((r) => r['jugador_id'] as String).join(',');
+        await _db
+            .from('user_jugadores')
+            .delete()
+            .eq('user_id', uid)
+            .not('jugador_id', 'in', '($ids)');
+      } else {
+        await _db.from('user_jugadores').delete().eq('user_id', uid);
+      }
+    } catch (e) {
       // Best-effort: sin conexión no se rompe la UI (se reintenta al guardar).
+      debugPrint('saveSquad failed: $e');
     }
   }
 
@@ -98,8 +115,9 @@ class SquadRepositorySupabase implements SquadRepository {
     final byGroup = <PlayerPositionGroup, List<Map<String, dynamic>>>{};
     for (final j in catalog) {
       final m = j as Map<String, dynamic>;
-      final g = PlayerPosition.values.byName(m['posicion'] as String).group;
-      byGroup.putIfAbsent(g, () => []).add(m);
+      final pos = PlayerPosition.values.asNameMap()[m['posicion']];
+      if (pos == null) continue; // fila de catálogo con posición corrupta
+      byGroup.putIfAbsent(pos.group, () => []).add(m);
     }
 
     final used = <String>{};
@@ -113,14 +131,18 @@ class SquadRepositorySupabase implements SquadRepository {
     final starters = <Player>[];
     for (final pos in _formation) {
       final j = pick(pos.group);
-      if (j != null) starters.add(_toPlayer(j, override: pos));
+      if (j == null) continue;
+      final player = _tryToPlayer(j, override: pos);
+      if (player != null) starters.add(player);
     }
 
     // Banca: un relevo por línea.
     final bench = <Player>[];
     for (final g in PlayerPositionGroup.values) {
       final j = pick(g);
-      if (j != null) bench.add(_toPlayer(j));
+      if (j == null) continue;
+      final player = _tryToPlayer(j);
+      if (player != null) bench.add(player);
     }
 
     final squad = Squad(starters: starters, bench: bench);
@@ -128,16 +150,29 @@ class SquadRepositorySupabase implements SquadRepository {
     return squad;
   }
 
-  Player _toPlayer(Map<String, dynamic> j, {PlayerPosition? override}) {
-    final rating = (j['puntaje'] as num).toInt();
-    return Player(
-      id: j['id'] as String,
-      name: j['nombre'] as String,
-      rating: rating,
-      position:
-          override ?? PlayerPosition.values.byName(j['posicion'] as String),
-      price: (j['precio'] as num?)?.toInt() ?? Player.priceForRating(rating),
-      photoUrl: j['foto_url_api'] as String?,
-    );
+  // Parseo defensivo: una fila corrupta del catálogo (posición desconocida,
+  // puntaje/id/nombre nulos, etc.) no debe tumbar toda la carga de la
+  // plantilla — se descarta esa fila y se sigue con el resto.
+  Player? _tryToPlayer(Map<String, dynamic> j, {PlayerPosition? override}) {
+    try {
+      final rating = (j['puntaje'] as num?)?.toInt();
+      final id = j['id'] as String?;
+      final name = j['nombre'] as String?;
+      if (rating == null || id == null || name == null) return null;
+      final position = override ??
+          PlayerPosition.values.asNameMap()[j['posicion']] ??
+          PlayerPosition.cm;
+      return Player(
+        id: id,
+        name: name,
+        rating: rating,
+        position: position,
+        price: (j['precio'] as num?)?.toInt() ?? Player.priceForRating(rating),
+        photoUrl: j['foto_url_api'] as String?,
+      );
+    } catch (e) {
+      debugPrint('_tryToPlayer failed: $e');
+      return null;
+    }
   }
 }
