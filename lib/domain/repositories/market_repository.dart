@@ -1,4 +1,4 @@
-import 'package:contador_app/domain/entities/player.dart';
+import 'package:ultime_team_manager/domain/entities/player.dart';
 
 abstract class MarketRepository {
   // Listado del mercado (jugadores comprables).

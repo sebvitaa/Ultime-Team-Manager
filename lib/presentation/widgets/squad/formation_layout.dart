@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:contador_app/domain/entities/player.dart';
+import 'package:ultime_team_manager/domain/entities/player.dart';
 
 // Un puesto fijo del 4-3-3 dentro de la cancha, en coordenadas fraccionales
 // (-1..1, con (0,0) al centro) para poder ubicarlo sobre cualquier tamaño de

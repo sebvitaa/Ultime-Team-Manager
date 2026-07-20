@@ -1,5 +1,5 @@
-name: contador_app
-description: "A new Flutter project."
+name: ultime_team_manager
+description: "Crea tu propio equipo de fútbol y gestiona tu plantilla con Ultime Team Manager. ¡Descubre la emoción de ser un manager virtual!"
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 

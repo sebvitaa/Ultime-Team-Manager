@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/presentation/providers/coins_provider.dart';
+import 'package:ultime_team_manager/config/theme/app_colors.dart';
+import 'package:ultime_team_manager/presentation/providers/coins_provider.dart';
 
 /// Píldora con el saldo de monedas del club. Se actualiza sola al comprar
 /// o vender en el mercado.

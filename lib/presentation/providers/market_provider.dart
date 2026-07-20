@@ -3,11 +3,11 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:contador_app/data/repositories/market_repository_supabase.dart';
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/domain/repositories/market_repository.dart';
-import 'package:contador_app/presentation/providers/coins_provider.dart';
-import 'package:contador_app/presentation/providers/squad_provider.dart';
+import 'package:ultime_team_manager/data/repositories/market_repository_supabase.dart';
+import 'package:ultime_team_manager/domain/entities/player.dart';
+import 'package:ultime_team_manager/domain/repositories/market_repository.dart';
+import 'package:ultime_team_manager/presentation/providers/coins_provider.dart';
+import 'package:ultime_team_manager/presentation/providers/squad_provider.dart';
 
 // 1) Provider del repositorio. Para cambiar de fuente (otra API, Supabase),
 //    cambia SOLO esta línea.

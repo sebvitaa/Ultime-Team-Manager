@@ -1,4 +1,4 @@
-import 'package:contador_app/domain/entities/app_user.dart';
+import 'package:ultime_team_manager/domain/entities/app_user.dart';
 
 abstract class AuthRepository {
   Future<AppUser?> currentUser();

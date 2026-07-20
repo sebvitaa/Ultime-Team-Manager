@@ -4,8 +4,8 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:contador_app/data/datasources/api_football_datasource.dart';
-import 'package:contador_app/domain/entities/player.dart';
+import 'package:ultime_team_manager/data/datasources/api_football_datasource.dart';
+import 'package:ultime_team_manager/domain/entities/player.dart';
 
 Map<String, dynamic> apiItem({
   int id = 83,

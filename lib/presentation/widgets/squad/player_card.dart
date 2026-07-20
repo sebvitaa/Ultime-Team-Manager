@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/domain/entities/player.dart';
+import 'package:ultime_team_manager/config/theme/app_colors.dart';
+import 'package:ultime_team_manager/domain/entities/player.dart';
 
 /// Carta estilo FUT para un jugador: valoración, avatar, nombre y posición.
 /// [width] la fija el layout de la cancha (11 cartas deben caber sin

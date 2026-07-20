@@ -8,7 +8,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:contador_app/main.dart';
+import 'package:ultime_team_manager/main.dart';
 
 void main() {
   testWidgets('App boots into the login screen', (WidgetTester tester) async {

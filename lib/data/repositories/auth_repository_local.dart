@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:contador_app/domain/entities/app_user.dart';
-import 'package:contador_app/domain/repositories/auth_repository.dart';
+import 'package:ultime_team_manager/domain/entities/app_user.dart';
+import 'package:ultime_team_manager/domain/repositories/auth_repository.dart';
 
 // Implementación OFFLINE del contrato de autenticación.
 class AuthRepositoryLocal implements AuthRepository {

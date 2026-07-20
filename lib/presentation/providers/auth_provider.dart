@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:contador_app/domain/entities/app_user.dart';
-import 'package:contador_app/domain/repositories/auth_repository.dart';
-import 'package:contador_app/data/repositories/auth_repository_supabase.dart';
+import 'package:ultime_team_manager/domain/entities/app_user.dart';
+import 'package:ultime_team_manager/domain/repositories/auth_repository.dart';
+import 'package:ultime_team_manager/data/repositories/auth_repository_supabase.dart';
 
 // 1) Provider del repositorio: Supabase Auth (login/registro reales).
 final authRepositoryProvider = Provider<AuthRepository>((ref) {

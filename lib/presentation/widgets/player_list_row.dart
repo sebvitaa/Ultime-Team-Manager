@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/domain/entities/player.dart';
+import 'package:ultime_team_manager/config/theme/app_colors.dart';
+import 'package:ultime_team_manager/domain/entities/player.dart';
 
 /// Fila reutilizable de jugador (banca, mercado): foto a la izquierda,
 /// nombre + subtítulo al centro, chip de puntaje y un `trailing` opcional

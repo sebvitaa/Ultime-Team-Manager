@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/presentation/providers/squad_provider.dart';
-import 'package:contador_app/presentation/widgets/squad/average_rating_header.dart';
-import 'package:contador_app/presentation/widgets/squad/formation_layout.dart';
-import 'package:contador_app/presentation/widgets/squad/pitch_geometry.dart';
-import 'package:contador_app/presentation/widgets/squad/player_bench_sheet.dart';
-import 'package:contador_app/presentation/widgets/squad/player_card.dart';
-import 'package:contador_app/presentation/widgets/squad/squad_pitch_background.dart';
+import 'package:ultime_team_manager/config/theme/app_colors.dart';
+import 'package:ultime_team_manager/domain/entities/player.dart';
+import 'package:ultime_team_manager/presentation/providers/squad_provider.dart';
+import 'package:ultime_team_manager/presentation/widgets/squad/average_rating_header.dart';
+import 'package:ultime_team_manager/presentation/widgets/squad/formation_layout.dart';
+import 'package:ultime_team_manager/presentation/widgets/squad/pitch_geometry.dart';
+import 'package:ultime_team_manager/presentation/widgets/squad/player_bench_sheet.dart';
+import 'package:ultime_team_manager/presentation/widgets/squad/player_card.dart';
+import 'package:ultime_team_manager/presentation/widgets/squad/squad_pitch_background.dart';
 
 /// Pantalla de plantilla: cancha vertical con el 11 titular en 4-3-3 y la
 /// valoración media del equipo arriba. Al tocar una carta se abre la banca

@@ -1,4 +1,4 @@
-import 'package:contador_app/domain/entities/match_event.dart';
+import 'package:ultime_team_manager/domain/entities/match_event.dart';
 
 /// Resultado completo de un partido simulado: marcador final y **todo** el
 /// timeline de eventos (ya con su minuto). La UI luego solo lo va revelando.

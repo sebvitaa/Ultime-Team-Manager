@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/presentation/widgets/player_list_row.dart';
+import 'package:ultime_team_manager/config/theme/app_colors.dart';
+import 'package:ultime_team_manager/domain/entities/player.dart';
+import 'package:ultime_team_manager/presentation/widgets/player_list_row.dart';
 
 /// Menú que se despliega desde abajo al tocar una carta: el titular arriba
 /// y, debajo, la banca disponible para esa misma posición. Tocar un

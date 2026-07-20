@@ -1,1 +1,0 @@
-- [ ] Nombre del equipo Hardcodeado como "Ultime FC", cuando debería ser el nombre dle equipo del USER. Durante torneos y partidos amistosos.

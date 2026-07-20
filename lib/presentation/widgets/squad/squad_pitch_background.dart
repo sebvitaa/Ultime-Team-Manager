@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/presentation/widgets/squad/pitch_geometry.dart';
+import 'package:ultime_team_manager/config/theme/app_colors.dart';
+import 'package:ultime_team_manager/presentation/widgets/squad/pitch_geometry.dart';
 
 /// Fondo ESTÁTICO de la pantalla de plantilla: una cancha vertical (arco
 /// arriba y abajo) dibujada con [CustomPaint], misma paleta que

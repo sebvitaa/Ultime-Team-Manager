@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
+import 'package:ultime_team_manager/config/theme/app_colors.dart';
 
 /// Fondo animado de la pantalla de intro: una cancha en neón verde con un balón
 /// que da pases aleatorios (ritmo de partido) rodando en 3D, más un barrido de

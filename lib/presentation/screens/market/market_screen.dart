@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/presentation/providers/coins_provider.dart';
-import 'package:contador_app/presentation/providers/market_provider.dart';
-import 'package:contador_app/presentation/providers/squad_provider.dart';
-import 'package:contador_app/presentation/widgets/coins_chip.dart';
-import 'package:contador_app/presentation/widgets/player_list_row.dart';
+import 'package:ultime_team_manager/config/theme/app_colors.dart';
+import 'package:ultime_team_manager/domain/entities/player.dart';
+import 'package:ultime_team_manager/presentation/providers/coins_provider.dart';
+import 'package:ultime_team_manager/presentation/providers/market_provider.dart';
+import 'package:ultime_team_manager/presentation/providers/squad_provider.dart';
+import 'package:ultime_team_manager/presentation/widgets/coins_chip.dart';
+import 'package:ultime_team_manager/presentation/widgets/player_list_row.dart';
 
 /// Mercado (RF4): comprar y vender jugadores. Arriba búsqueda, filtro por
 /// posición y orden; luego el selector Comprar|Vender; abajo la lista.
