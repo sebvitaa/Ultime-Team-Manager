@@ -1,0 +1,1 @@
+- [ ] Cuando se vende un jugador, aparece 2 veces en el mercado. Funcionalidad esperada: Si se compra, desaparece del mercado del USER. Si se vende, vuelve a aparecer.

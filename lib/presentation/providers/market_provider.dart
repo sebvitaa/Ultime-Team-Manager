@@ -61,10 +61,14 @@ class MarketState {
       for (final b in squad.bench) b.id,
     };
 
+    // Los vendidos que ya están en el listado del mercado no se re-agregan
+    // (evita que un jugador vuelto a poner en venta aparezca duplicado).
+    final listingIds = {for (final p in listings) p.id};
     var players = mode == MarketMode.buy
         ? [
             ...listings.where((p) => !ownedIds.contains(p.id)),
-            ...soldPlayers.where((p) => !ownedIds.contains(p.id)),
+            ...soldPlayers.where((p) =>
+                !ownedIds.contains(p.id) && !listingIds.contains(p.id)),
           ]
         : List<Player>.from(squad.bench);
 
