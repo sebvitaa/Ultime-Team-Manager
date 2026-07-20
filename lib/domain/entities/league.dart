@@ -67,7 +67,7 @@ class TieView {
   bool isWinner(LeagueTeam t) => winner != null && t.name == winner!.name;
 }
 
-/// El próximo partido que debe jugar el usuario (Ultime FC).
+/// El próximo partido que debe jugar el usuario (su equipo).
 class UltimeFixture {
   final LeagueTeam rival;
   final String label; // "Fase de grupos · Fecha 2", "Cuartos de final", ...
@@ -85,6 +85,7 @@ class LeagueState {
   final LeagueTeam? champion;
   final UltimeFixture? next; // null si Ultime no juega (eliminado / terminado)
   final bool ultimeEliminated;
+  final String ultimeName; // nombre del equipo del usuario (para la UI)
 
   const LeagueState({
     required this.groups,
@@ -96,5 +97,6 @@ class LeagueState {
     required this.champion,
     required this.next,
     required this.ultimeEliminated,
+    required this.ultimeName,
   });
 }

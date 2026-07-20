@@ -6,6 +6,7 @@ import 'package:contador_app/core/services/match_simulator.dart';
 import 'package:contador_app/data/league_teams.dart';
 import 'package:contador_app/domain/entities/match_event.dart';
 import 'package:contador_app/domain/entities/match_result.dart';
+import 'package:contador_app/presentation/providers/auth_provider.dart';
 import 'package:contador_app/presentation/providers/coins_provider.dart';
 import 'package:contador_app/presentation/providers/league_provider.dart';
 import 'package:contador_app/presentation/providers/squad_provider.dart';
@@ -98,7 +99,7 @@ class MatchController extends AutoDisposeNotifier<MatchState> {
     final req = ref.read(matchRequestProvider);
     final avg = ref.read(squadControllerProvider).averageRating;
     final ratingLocal = (avg >= 1 ? avg.round() : 75).clamp(1, 99);
-    const localName = 'Ultime FC';
+    final localName = ref.read(teamNameProvider);
 
     final String visitaName;
     final int ratingVisita;

@@ -7,7 +7,6 @@ import 'package:contador_app/domain/entities/league_team.dart';
 import 'package:contador_app/presentation/providers/league_provider.dart';
 import 'package:contador_app/presentation/providers/match_provider.dart';
 
-const _kUltime = 'Ultime FC';
 const _maxW = 560.0;
 
 /// Liga jugable (RF6): juegas tu partido, se simula el resto y avanza por fases.
@@ -164,7 +163,7 @@ class _ActionBar extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               child: next != null
-                  ? _NextRow(next: next)
+                  ? _NextRow(next: next, ultimeName: data.ultimeName)
                   : _EndRow(data: data),
             ),
           ),
@@ -176,7 +175,8 @@ class _ActionBar extends ConsumerWidget {
 
 class _NextRow extends ConsumerWidget {
   final UltimeFixture next;
-  const _NextRow({required this.next});
+  final String ultimeName;
+  const _NextRow({required this.next, required this.ultimeName});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -191,7 +191,7 @@ class _NextRow extends ConsumerWidget {
                   style: TextStyle(
                       color: AppColors.gris, fontSize: 10, letterSpacing: 1)),
               const SizedBox(height: 2),
-              Text('Ultime FC  vs  ${next.rival.name}',
+              Text('$ultimeName  vs  ${next.rival.name}',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
@@ -235,7 +235,7 @@ class _EndRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final champ = data.champion?.name ?? '';
-    final youWon = champ == _kUltime;
+    final youWon = champ == data.ultimeName;
     return Row(
       children: [
         const Icon(Icons.emoji_events, color: AppColors.oro, size: 26),
@@ -253,8 +253,9 @@ class _EndRow extends ConsumerWidget {
                       fontSize: 14,
                       fontWeight: FontWeight.w800)),
               if (data.ultimeEliminated)
-                const Text('Ultime FC quedó eliminado',
-                    style: TextStyle(color: AppColors.gris, fontSize: 11)),
+                Text('${data.ultimeName} quedó eliminado',
+                    style: const TextStyle(
+                        color: AppColors.gris, fontSize: 11)),
             ],
           ),
         ),
@@ -304,7 +305,7 @@ class _GroupsView extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               for (final g in data.groups) ...[
-                _GroupCard(g),
+                _GroupCard(g, data.ultimeName),
                 const SizedBox(height: 12),
               ],
             ],
@@ -317,7 +318,8 @@ class _GroupsView extends StatelessWidget {
 
 class _GroupCard extends StatelessWidget {
   final GroupView group;
-  const _GroupCard(this.group);
+  final String ultimeName;
+  const _GroupCard(this.group, this.ultimeName);
 
   @override
   Widget build(BuildContext context) {
@@ -347,7 +349,11 @@ class _GroupCard extends StatelessWidget {
           ),
           const _HeaderRow(),
           for (var i = 0; i < group.table.length; i++)
-            _TeamRow(pos: i + 1, s: group.table[i], qualifies: i < 2),
+            _TeamRow(
+                pos: i + 1,
+                s: group.table[i],
+                qualifies: i < 2,
+                ultimeName: ultimeName),
           const SizedBox(height: 6),
         ],
       ),
@@ -389,11 +395,17 @@ class _TeamRow extends StatelessWidget {
   final int pos;
   final TeamStanding s;
   final bool qualifies;
-  const _TeamRow({required this.pos, required this.s, required this.qualifies});
+  final String ultimeName;
+  const _TeamRow({
+    required this.pos,
+    required this.s,
+    required this.qualifies,
+    required this.ultimeName,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isMe = s.team.name == _kUltime;
+    final isMe = s.team.name == ultimeName;
     final dg = s.goalDiff;
     return Container(
       decoration: BoxDecoration(
@@ -473,20 +485,20 @@ class _BracketView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _RoundColumn('Cuartos', [
-              for (final t in data.quarters) _MatchCard(t),
+              for (final t in data.quarters) _MatchCard(t, data.ultimeName),
             ]),
             _RoundColumn('Semis', [
               if (data.semis.isEmpty) ...[
                 const _Placeholder(),
                 const _Placeholder(),
               ] else
-                for (final t in data.semis) _MatchCard(t),
+                for (final t in data.semis) _MatchCard(t, data.ultimeName),
             ]),
             _RoundColumn('Final', [
               if (data.finalTie == null)
                 const _Placeholder()
               else
-                _MatchCard(data.finalTie!),
+                _MatchCard(data.finalTie!, data.ultimeName),
             ]),
             _RoundColumn('Campeón', [
               _ChampionCard(champion: data.champion?.name),
@@ -528,11 +540,13 @@ class _RoundColumn extends StatelessWidget {
 
 class _MatchCard extends StatelessWidget {
   final TieView tie;
-  const _MatchCard(this.tie);
+  final String ultimeName;
+  const _MatchCard(this.tie, this.ultimeName);
 
   @override
   Widget build(BuildContext context) {
-    final hasMe = tie.home.name == _kUltime || tie.away.name == _kUltime;
+    final hasMe =
+        tie.home.name == ultimeName || tie.away.name == ultimeName;
     return Container(
       width: 170,
       decoration: BoxDecoration(

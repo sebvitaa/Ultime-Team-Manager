@@ -8,6 +8,17 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepositorySupabase();
 });
 
+/// Nombre por defecto cuando el usuario no tiene equipo (cuenta demo/offline o
+/// registro sin club).
+const kDefaultTeamName = 'Ultime FC';
+
+/// Fuente única del nombre del equipo del usuario para toda la app. Usa el
+/// `teamName` de la sesión y cae al valor por defecto si no hay ninguno.
+final teamNameProvider = Provider<String>((ref) {
+  final name = ref.watch(authControllerProvider).user?.teamName?.trim();
+  return (name != null && name.isNotEmpty) ? name : kDefaultTeamName;
+});
+
 // 2) Estados posibles de la sesión.
 enum AuthStatus { unknown, authenticated, unauthenticated }
 

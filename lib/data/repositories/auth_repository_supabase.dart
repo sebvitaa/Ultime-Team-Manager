@@ -14,7 +14,18 @@ class AuthRepositorySupabase implements AuthRepository {
   @override
   Future<AppUser?> currentUser() async {
     final u = _auth.currentUser;
-    return u == null ? null : AppUser(id: u.id, email: u.email ?? '');
+    return u == null ? null : _toAppUser(u);
+  }
+
+  // Construye el AppUser leyendo el nombre del equipo desde la metadata que se
+  // guardó al registrarse (`nombre_equipo`).
+  AppUser _toAppUser(User u) {
+    final name = u.userMetadata?['nombre_equipo'];
+    return AppUser(
+      id: u.id,
+      email: u.email ?? '',
+      teamName: name is String && name.trim().isNotEmpty ? name.trim() : null,
+    );
   }
 
   @override
@@ -27,7 +38,7 @@ class AuthRepositorySupabase implements AuthRepository {
           email: email.trim(), password: password);
       final u = res.user;
       if (u == null) throw const AuthException('No se pudo iniciar sesión');
-      return AppUser(id: u.id, email: u.email ?? '');
+      return _toAppUser(u);
     } catch (e) {
       if (e is AuthException) rethrow;
       throw AuthException(_friendly(e));
@@ -57,7 +68,7 @@ class AuthRepositorySupabase implements AuthRepository {
         throw const AuthException(
             'Cuenta creada. Revisa tu correo para confirmarla antes de entrar.');
       }
-      return AppUser(id: u.id, email: u.email ?? '');
+      return _toAppUser(u);
     } catch (e) {
       if (e is AuthException) rethrow;
       throw AuthException(_friendly(e));

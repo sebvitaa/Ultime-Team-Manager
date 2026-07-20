@@ -5,9 +5,9 @@ import 'package:contador_app/data/league_teams.dart';
 import 'package:contador_app/data/services/league_engine.dart';
 import 'package:contador_app/domain/entities/league.dart';
 import 'package:contador_app/domain/entities/league_team.dart';
+import 'package:contador_app/presentation/providers/auth_provider.dart';
 import 'package:contador_app/presentation/providers/squad_provider.dart';
 
-const _kUltime = 'Ultime FC';
 const _groupNames = ['A', 'B', 'C', 'D'];
 
 /// Liga JUGABLE (RF6): el usuario juega su partido en la pantalla de juego y el
@@ -18,6 +18,7 @@ final leagueProvider =
 
 class LeagueController extends Notifier<LeagueState> {
   final _rng = Random();
+  late String _ultimeName; // nombre del equipo del usuario en esta liga
   late LeagueTeam _ultime;
   late List<_WGroup> _groups;
   late List<List<_WFx>> _schedule; // 3 fechas x 8 partidos
@@ -58,9 +59,10 @@ class LeagueController extends Notifier<LeagueState> {
   // ---------------- inicialización ----------------
 
   void _init() {
+    _ultimeName = ref.read(teamNameProvider);
     final avg = ref.read(squadControllerProvider).averageRating;
     final rating = (avg >= 1 ? avg.round() : 75).clamp(1, 99);
-    _ultime = LeagueTeam(name: _kUltime, country: '—', rating: rating);
+    _ultime = LeagueTeam(name: _ultimeName, country: '—', rating: rating);
 
     final teams = <LeagueTeam>[_ultime, ...kLeagueTeams]..shuffle(_rng);
     _groups = [
@@ -96,7 +98,7 @@ class LeagueController extends Notifier<LeagueState> {
   // Ultime siempre de local en su partido (para la pantalla de juego).
   _WFx _fixture(int gi, int i, int j) {
     var a = _groups[gi].teams[i], b = _groups[gi].teams[j];
-    if (b.name == _kUltime) {
+    if (b.name == _ultimeName) {
       final t = a;
       a = b;
       b = t;
@@ -108,7 +110,7 @@ class LeagueController extends Notifier<LeagueState> {
 
   void _playGroupMatchday(int ug, int rg) {
     for (final fx in _schedule[_matchday]) {
-      if (fx.home.name == _kUltime) {
+      if (fx.home.name == _ultimeName) {
         fx.hg = ug;
         fx.ag = rg;
       } else {
@@ -160,9 +162,9 @@ class LeagueController extends Notifier<LeagueState> {
 
     // ¿Ultime clasificó (top 2 de su grupo)?
     final myGroup =
-        _groups.firstWhere((g) => g.teams.any((t) => t.name == _kUltime));
+        _groups.firstWhere((g) => g.teams.any((t) => t.name == _ultimeName));
     final myPos =
-        myGroup.sorted().indexWhere((s) => s.team.name == _kUltime);
+        myGroup.sorted().indexWhere((s) => s.team.name == _ultimeName);
     if (myPos >= 2) {
       _eliminated = true;
       _autoCompleteBracket();
@@ -180,7 +182,7 @@ class LeagueController extends Notifier<LeagueState> {
       _ensurePlayed(t);
     }
 
-    final ultimeWon = tie.winner!.name == _kUltime;
+    final ultimeWon = tie.winner!.name == _ultimeName;
     if (!ultimeWon) {
       _eliminated = true;
       _autoCompleteBracket();
@@ -206,7 +208,7 @@ class LeagueController extends Notifier<LeagueState> {
   }
 
   void _applyUltimeToTie(_WTie t, int ug, int rg) {
-    if (t.home.name == _kUltime) {
+    if (t.home.name == _ultimeName) {
       t.hg = ug;
       t.ag = rg;
     } else {
@@ -270,7 +272,7 @@ class LeagueController extends Notifier<LeagueState> {
   _WTie? _currentUltimeTie() {
     for (final t in _roundTies(_phase)) {
       if (!t.played &&
-          (t.home.name == _kUltime || t.away.name == _kUltime)) {
+          (t.home.name == _ultimeName || t.away.name == _ultimeName)) {
         return t;
       }
     }
@@ -282,14 +284,14 @@ class LeagueController extends Notifier<LeagueState> {
   UltimeFixture? _nextFixture() {
     if (_phase == LeaguePhase.groups && _matchday < 3) {
       final fx = _schedule[_matchday].firstWhere(
-          (f) => f.home.name == _kUltime || f.away.name == _kUltime);
-      final rival = fx.home.name == _kUltime ? fx.away : fx.home;
+          (f) => f.home.name == _ultimeName || f.away.name == _ultimeName);
+      final rival = fx.home.name == _ultimeName ? fx.away : fx.home;
       return UltimeFixture(rival, 'Fase de grupos · Fecha ${_matchday + 1}');
     }
     if (_eliminated || _phase == LeaguePhase.done) return null;
     final tie = _currentUltimeTie();
     if (tie == null) return null;
-    final rival = tie.home.name == _kUltime ? tie.away : tie.home;
+    final rival = tie.home.name == _ultimeName ? tie.away : tie.home;
     final label = switch (_phase) {
       LeaguePhase.quarters => 'Cuartos de final',
       LeaguePhase.semis => 'Semifinal',
@@ -312,6 +314,7 @@ class LeagueController extends Notifier<LeagueState> {
       champion: _champion,
       next: _nextFixture(),
       ultimeEliminated: _eliminated,
+      ultimeName: _ultimeName,
     );
   }
 }
