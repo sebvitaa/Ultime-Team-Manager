@@ -1,0 +1,13 @@
+flutter_native_splash:
+  color: "#0B0F0D"                                 # se ve en los bordes si sobra
+  background_image: assets/images/pantallaCarga.png # fondo a pantalla completa
+
+  # Android 12+ NO soporta imagen a pantalla completa en el splash del sistema:
+  # solo dibuja un ícono centrado sobre un color. Ahí usamos el escudo.
+  android_12:
+    color: "#0B0F0D"
+    image: assets/icon/icon_foreground.png
+
+  # Plataformas a generar.
+  android: true
+  ios: true

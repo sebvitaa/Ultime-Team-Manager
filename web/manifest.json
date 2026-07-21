@@ -1,6 +1,6 @@
 {
-    "name": "contador_app",
-    "short_name": "contador_app",
+    "name": "Ultimate Team Manager",
+    "short_name": "UTM",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
