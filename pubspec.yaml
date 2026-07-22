@@ -32,7 +32,8 @@ flutter:
     - .env
     - assets/images/
     - assets/data/squad.json
-    - assets/sounds/music/intro.mp3
+    - assets/sounds/music/
+    - assets/sounds/sound_effects/
 
 flutter_launcher_icons:
   android: true

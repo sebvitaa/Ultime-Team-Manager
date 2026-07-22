@@ -6,6 +6,7 @@ import 'package:contador_app/presentation/providers/auth_provider.dart';
 import 'package:contador_app/presentation/providers/match_provider.dart';
 import 'package:contador_app/presentation/widgets/coins_chip.dart';
 import 'package:contador_app/presentation/widgets/crest_logo.dart';
+import 'package:contador_app/presentation/widgets/lobby_music.dart';
 
 /// Panel principal del club: escudo, saldo de monedas y accesos a las
 /// secciones (Plantilla, Mercado; Liga y Partido llegan más adelante).
@@ -18,86 +19,91 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.fondo,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 16),
-              // Encabezado: escudo, nombre del club y cerrar sesión.
-              Row(
-                children: [
-                  const CrestLogo(size: 44),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Ultime Team Manager',
-                          style: TextStyle(
-                            color: AppColors.texto,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w800,
+      body: Stack(
+        children: [
+          const LobbyMusic(),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 16),
+                // Encabezado: escudo, nombre del club y cerrar sesión.
+                Row(
+                  children: [
+                    const CrestLogo(size: 44),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Ultime Team Manager',
+                            style: TextStyle(
+                              color: AppColors.texto,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
-                        ),
-                        Text(
-                          user?.email ?? 'jugador',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              color: AppColors.gris, fontSize: 12),
-                        ),
-                      ],
+                          Text(
+                            user?.email ?? 'jugador',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                color: AppColors.gris, fontSize: 12),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    tooltip: 'Cerrar sesión',
-                    icon: const Icon(Icons.logout, color: AppColors.gris),
-                    onPressed: () =>
-                        ref.read(authControllerProvider.notifier).signOut(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              // Saldo del club.
-              const Row(children: [CoinsChip()]),
-              const SizedBox(height: 24),
-              // Accesos a las secciones.
-              _MenuCard(
-                icon: Icons.groups,
-                title: 'Plantilla',
-                subtitle: 'Tu 11 titular y la banca (4-3-3)',
-                onTap: () => context.push('/squad'),
-              ),
-              const SizedBox(height: 12),
-              _MenuCard(
-                icon: Icons.storefront,
-                title: 'Mercado',
-                subtitle: 'Compra y vende jugadores',
-                onTap: () => context.push('/market'),
-              ),
-              const SizedBox(height: 12),
-              _MenuCard(
-                icon: Icons.emoji_events,
-                title: 'Liga',
-                subtitle: 'Grupos y eliminatorias',
-                onTap: () => context.push('/league'),
-              ),
-              const SizedBox(height: 12),
-              _MenuCard(
-                icon: Icons.sports_soccer,
-                title: 'Partido',
-                subtitle: 'Amistoso rápido',
-                onTap: () {
-                  ref.read(matchRequestProvider.notifier).state = null;
-                  context.push('/match');
-                },
-              ),
-            ],
+                    IconButton(
+                      tooltip: 'Cerrar sesión',
+                      icon: const Icon(Icons.logout, color: AppColors.gris),
+                      onPressed: () =>
+                          ref.read(authControllerProvider.notifier).signOut(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                // Saldo del club.
+                const Row(children: [CoinsChip()]),
+                const SizedBox(height: 24),
+                // Accesos a las secciones.
+                _MenuCard(
+                  icon: Icons.groups,
+                  title: 'Plantilla',
+                  subtitle: 'Tu 11 titular y la banca (4-3-3)',
+                  onTap: () => context.push('/squad'),
+                ),
+                const SizedBox(height: 12),
+                _MenuCard(
+                  icon: Icons.storefront,
+                  title: 'Mercado',
+                  subtitle: 'Compra y vende jugadores',
+                  onTap: () => context.push('/market'),
+                ),
+                const SizedBox(height: 12),
+                _MenuCard(
+                  icon: Icons.emoji_events,
+                  title: 'Liga',
+                  subtitle: 'Grupos y eliminatorias',
+                  onTap: () => context.push('/league'),
+                ),
+                const SizedBox(height: 12),
+                _MenuCard(
+                  icon: Icons.sports_soccer,
+                  title: 'Partido',
+                  subtitle: 'Amistoso rápido',
+                  onTap: () {
+                    ref.read(matchRequestProvider.notifier).state = null;
+                    context.push('/match');
+                  },
+                ),
+              ],
+            ),
           ),
         ),
+        ],
       ),
     );
   }
