@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/domain/repositories/market_repository.dart';
-import 'package:contador_app/presentation/providers/market_provider.dart';
-import 'package:contador_app/presentation/screens/market/market_screen.dart';
+import 'package:ultimate_team_manager/domain/entities/player.dart';
+import 'package:ultimate_team_manager/domain/repositories/market_repository.dart';
+import 'package:ultimate_team_manager/presentation/providers/market_provider.dart';
+import 'package:ultimate_team_manager/presentation/screens/market/market_screen.dart';
 
 const kCheapPlayer = Player(
   id: 'api_1',

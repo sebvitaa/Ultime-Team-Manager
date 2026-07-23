@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/domain/repositories/market_repository.dart';
+import 'package:ultimate_team_manager/domain/entities/player.dart';
+import 'package:ultimate_team_manager/domain/repositories/market_repository.dart';
 
 /// Mercado leyendo de Supabase (tabla `jugadores`, poblada desde API-Football).
 /// La tabla tiene lectura pública (RLS), así que funciona con la clave pública

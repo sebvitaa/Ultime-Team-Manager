@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/domain/entities/squad.dart';
-import 'package:contador_app/domain/repositories/squad_repository.dart';
+import 'package:ultimate_team_manager/domain/entities/player.dart';
+import 'package:ultimate_team_manager/domain/entities/squad.dart';
+import 'package:ultimate_team_manager/domain/repositories/squad_repository.dart';
 
 // Implementación OFFLINE del contrato de plantilla: el estado guardado en el
 // dispositivo manda; si no existe (primera ejecución), se usa la semilla JSON.

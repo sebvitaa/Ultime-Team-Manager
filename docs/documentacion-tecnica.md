@@ -1,4 +1,4 @@
-# Documentación técnica — Ultime Team Manager
+# Documentación técnica — Ultimate Team Manager
 
 > Documento de referencia completo del código fuente: qué hace cada archivo, qué
 > widgets construye y en qué orden, cómo se conecta con APIs externas y con
@@ -40,19 +40,22 @@
 
 ## 1. Resumen del proyecto
 
-**Ultime Team Manager** es una app Flutter/Dart tipo *FC Ultimate Team*: el
+**Ultimate Team Manager** es una app Flutter/Dart tipo *FC Ultimate Team*: el
 jugador arma un 11 titular (formación fija 4-3-3), compra y vende cartas de
 futbolistas en un mercado, simula partidos contra rivales y compite en una
 liga (grupos + eliminatorias) que reparte monedas según el resultado.
 
-El nombre interno del paquete Dart sigue siendo `contador_app` (heredado del
-proyecto base de la Unidad 1, un contador con `setState`; ver
-`lib/presentation/screens/counter/counter_screen.dart`, que ya no está
-enrutado pero se conserva en el repo). Por eso **todos los imports internos
-empiezan con `package:contador_app/...`** aunque el proyecto se llame "Ultime
-Team Manager" de cara al usuario.
+El paquete Dart se llama `ultimate_team_manager` (`pubspec.yaml:1`) — mismo
+nombre que la marca de cara al usuario, tras el renombrado desde el
+`contador_app` heredado del proyecto base de la Unidad 1 (un contador con
+`setState`). Ese origen todavía es visible en
+`lib/presentation/screens/counter/counter_screen.dart` (la pantalla
+`CounterScreen`, con textos como "Contador Matón"), que **no está enrutada**
+(no aparece en `app_router.dart`) y se conserva solo como referencia
+histórica del punto de partida del proyecto.
 
-- **Package name real:** `contador_app` (`pubspec.yaml:1`)
+- **Package name:** `ultimate_team_manager` (`pubspec.yaml:1`); todos los
+  imports internos usan `package:ultimate_team_manager/...`.
 - **Backend:** Supabase (Postgres + Auth + Storage), ya migrado desde el
   diseño original 100% local/offline.
 - **Origen de datos de jugadores:** API-Football (api-sports.io), inyectada
@@ -100,7 +103,7 @@ qué* de ciertas decisiones, pero el código es la fuente de verdad):
 | `shared_preferences` | `^2.3.3` | Persistencia local ligera: sesión offline de respaldo (`AuthRepositoryLocal`), caché de 24h del mercado (`MarketRepositoryApi`), lista de "vendidos" del mercado (`MarketController`), plantilla local de respaldo (`SquadRepositoryLocal`). |
 | `http` | `^1.2.2` | Cliente HTTP usado por `ApiFootballDatasource` para llamar a la API pública de fútbol. |
 | `flutter_dotenv` | `^5.2.1` | Carga variables de entorno desde el archivo `.env` (empaquetado como asset) — claves de Supabase y de API-Football. |
-| `audioplayers` | `^6.8.1` | Reproduce la música de intro en loop en la pantalla de login (`IntroMusic`). |
+| `audioplayers` | `^6.8.1` | Motor de audio de toda la app: música de la pantalla de login (`IntroMusic`) y el sistema de música por contexto — lobby y partido — centralizado en `MusicService` (`LobbyMusic`, `MatchMusic`). |
 | `cupertino_icons` | `^1.0.8` | Set de iconos estilo iOS (dependencia estándar del template de Flutter). |
 
 ### `dev_dependencies` (solo en desarrollo/build, no van a producción)
@@ -119,11 +122,20 @@ assets:
   - .env
   - assets/images/
   - assets/data/squad.json
-  - assets/sounds/music/intro.mp3
+  - assets/sounds/music/
+  - assets/sounds/sound_effects/
 ```
 
 `.env` se empaqueta como asset (no como secreto de build) porque el proyecto
-es un trabajo académico offline-first; `flutter_dotenv` lo lee en runtime.
+es un trabajo académico offline-first; `flutter_dotenv` lo lee en runtime. Las
+carpetas de sonido se declaran completas (no archivo por archivo) porque
+`MusicService` necesita varias pistas: `assets/sounds/music/` trae
+`intro.mp3` (login), `lobby1.mp3`/`lobby2.mp3`/`lobby3.mp3` (playlist del
+lobby) y `match.mp3`/`peopleingame.mp3` (las dos pistas superpuestas del
+partido); `assets/sounds/sound_effects/whistles.mp3` está empaquetado pero
+**todavía no se reproduce desde ningún widget** (no hay ninguna referencia a
+`whistles` en `lib/`) — parece reservado para un futuro pitido de
+inicio/final de partido.
 
 ---
 
@@ -198,7 +210,9 @@ lib/
 │   │   ├── market_repository_supabase.dart# implementación real (activa)
 │   │   ├── squad_repository_local.dart    # implementación offline (no usada hoy)
 │   │   └── squad_repository_supabase.dart # implementación real (activa)
-│   ├── services/league_engine.dart        # helpers puros para simular partidos de liga
+│   ├── services/
+│   │   ├── league_engine.dart             # helpers puros para simular partidos de liga
+│   │   └── music_service.dart             # singleton: música por contexto (lobby/partido)
 │   └── models/                            # (vacía, .gitkeep — reservada)
 ├── domain/
 │   ├── entities/
@@ -233,7 +247,9 @@ lib/
     └── widgets/
         ├── coins_chip.dart
         ├── crest_logo.dart
-        ├── intro_music.dart
+        ├── intro_music.dart                # música del login (independiente de MusicService)
+        ├── lobby_music.dart                # enciende la playlist del lobby (Home)
+        ├── match_music.dart                # enciende la música del partido (Match)
         ├── pitch_background.dart
         ├── player_list_row.dart
         └── squad/
@@ -606,6 +622,45 @@ para resolver partidos de la liga que el usuario no juega en vivo:
   probabilísticamente al equipo de mayor rating
   (`P(a gana) = a.rating / (a.rating + b.rating)`), con un marcador
   "realista" tipo 4-3 (`perdedor` entre 2 y 4, `ganador = perdedor + 1`).
+
+### 11.7 `services/music_service.dart` — `MusicService`
+
+Singleton (`MusicService._()` + `MusicService.instance`) que centraliza toda
+la música **excepto** la de la pantalla de login (esa la maneja `IntroMusic`
+por su cuenta, con su propio `AudioPlayer` — ver
+[16.3](#163-widgetsintro_musicdart--intromusic)). La idea es que **un solo
+"contexto" de música suene a la vez** en el resto de la app: lobby (Home) o
+partido (Match), nunca los dos juntos.
+
+- **Lobby** (`_lobby`, un único `AudioPlayer`): reproduce una playlist de 3
+  pistas encadenadas en bucle manual — `lobby1.mp3`, `lobby2.mp3`,
+  `lobby3.mp3` (`_lobbyPlaylist`). Usa `ReleaseMode.stop` (no
+  `ReleaseMode.loop`) a propósito: así cada pista dispara
+  `onPlayerComplete`, y el listener registrado en `playLobby()` avanza
+  `_lobbyIndex` a la siguiente pista (`% length`, vuelve a la primera al
+  llegar al final) — es lo que arma el efecto de playlist en vez de repetir
+  siempre la misma canción.
+- **Partido** (`_matchMain` + `_matchCrowd`, dos `AudioPlayer` independientes
+  y simultáneos): `match.mp3` (música principal, volumen 0.7) y
+  `peopleingame.mp3` (ambiente de público, volumen 0.45 — de fondo),
+  ambos en `ReleaseMode.loop`, **mezclados** (no se turnan, suenan a la vez).
+- `playLobby()` / `playMatch()` son mutuamente excluyentes: cada uno para el
+  otro contexto primero (`playLobby()` llama `_stopMatch()`; `playMatch()`
+  llama `stopLobby()`) antes de arrancar el suyo, y ambos son idempotentes
+  (`if (_lobbyRunning) return` / `if (_matchRunning) return` — entrar dos
+  veces al mismo contexto no reinicia la pista).
+- `toggleMute()`: baja todos los volúmenes a 0 (o los restaura) sin detener
+  la reproducción — a diferencia de `IntroMusic`, que sí pausa/reanuda el
+  player.
+- Todos los métodos están envueltos en `try/catch` con `debugPrint`: un
+  fallo de audio (archivo faltante, plataforma sin soporte) nunca interrumpe
+  la UI.
+
+`LobbyMusic` y `MatchMusic` (sección [16](#16-capa-presentation--widgets-reutilizables))
+son los únicos puntos de la UI que llaman a `MusicService.instance` — son
+widgets "invisibles" (`build()` devuelve `SizedBox.shrink()`) cuyo único rol
+es encender/apagar la música según el ciclo de vida de la pantalla que los
+monta.
 
 ---
 
@@ -1056,16 +1111,27 @@ provider. Si tiene éxito, **no navega manualmente**: el cambio de
 
 ```
 Scaffold
-└─ SafeArea
-   └─ Padding (horizontal 20)
-      └─ Column (stretch)
-         ├─ Row: CrestLogo(44) + (título + email del usuario) + IconButton logout
-         ├─ Row: CoinsChip()
-         ├─ _MenuCard "Plantilla"  → context.push('/squad')
-         ├─ _MenuCard "Mercado"    → context.push('/market')
-         ├─ _MenuCard "Liga"       → context.push('/league')
-         └─ _MenuCard "Partido"    → limpia matchRequestProvider + context.push('/match')
+└─ Stack
+   ├─ LobbyMusic                            (widget invisible: enciende la playlist del lobby)
+   └─ SafeArea
+      └─ Padding (horizontal 20)
+         └─ Column (stretch)
+            ├─ Row: CrestLogo(44) + (título + email del usuario) + IconButton logout
+            ├─ Row: CoinsChip()
+            ├─ _MenuCard "Plantilla"  → context.push('/squad')
+            ├─ _MenuCard "Mercado"    → context.push('/market')
+            ├─ _MenuCard "Liga"       → context.push('/league')
+            └─ _MenuCard "Partido"    → limpia matchRequestProvider + context.push('/match')
 ```
+
+`LobbyMusic` monta al entrar a `HomeScreen` y llama
+`MusicService.instance.playLobby()` en su `initState`; al salir del lobby
+(por ejemplo, al cerrar sesión y volver a `/login`) su `dispose()` llama
+`stopLobby()`. Es la única pantalla donde suena la playlist del lobby, pero
+como `MusicService` es un singleton, la música sigue sonando de fondo si el
+usuario navega a `/squad`, `/market` o `/league` (esas pantallas no tienen su
+propio widget de música, así que no la interrumpen) — solo se corta al
+entrar a `/match` (`MatchMusic` la reemplaza) o al salir del lobby.
 
 `_MenuCard` (widget privado, reutilizado 4 veces): `Material` + `InkWell` con
 icono en caja redondeada, título, subtítulo y chevron; si `onTap` es `null`
@@ -1183,8 +1249,18 @@ PopScope
       │    ├─ _Timeline(events, minute)                     (barra de progreso 0-90 con marcas de gol)
       │    ├─ _Feed(events)                                 (últimos 8 eventos, scrollable)
       │    └─ [finished] _ResultBar(coinsAwarded, fromLeague)
+      ├─ MatchMusic                                         (widget invisible: música del partido)
       └─ [finished] Positioned (top-left) → IconButton volver
 ```
+
+`MatchMusic` monta junto con la pantalla y llama
+`MusicService.instance.playMatch()` en su `initState` (que a su vez corta la
+música del lobby). "Jugar de nuevo" (`MatchController.restart()`) no
+desmonta `MatchScreen` — solo reinicia el estado del partido —, así que la
+música del partido sigue sonando sin interrupción; recién al **salir** de la
+pantalla (`context.pop()`, sea por "Salir" o "Continuar") se dispara
+`dispose()`, que llama `playLobby()` de vuelta, así el usuario siempre
+vuelve a Home con la playlist del lobby sonando.
 
 - **`_TeamSide`**: nombre (2 líneas), barrita de color, "MEDIA <rating>", y
   el marcador con `AnimatedSwitcher` (efecto "pop" al cambiar de valor vía
@@ -1228,14 +1304,30 @@ pentágono central) y el monograma "UTM" arriba. Escalable a cualquier
 `size`.
 
 ### 16.3 `widgets/intro_music.dart` — `IntroMusic`
-`StatefulWidget` con `AudioPlayer` (paquete `audioplayers`). En `initState`
-configura `ReleaseMode.loop`, fija el volumen y arranca la reproducción de
-`sounds/music/intro.mp3`. Muestra un botón circular flotante (arriba a la
-derecha) para pausar/reanudar. Libera el player en `dispose()`. Todo el
-manejo de errores es vía `debugPrint` (no interrumpe la UI si el audio
-falla).
+`StatefulWidget` con su **propio** `AudioPlayer` (paquete `audioplayers`),
+independiente de `MusicService` (ver [11.7](#117-servicesmusic_servicedart--musicservice)) —
+existe desde antes de que se centralizara la música del lobby/partido y
+nunca se migró, así que hoy conviven dos mecanismos de audio distintos en la
+app. En `initState` configura `ReleaseMode.loop`, fija el volumen y arranca
+la reproducción de `sounds/music/intro.mp3`. Muestra un botón circular
+flotante (arriba a la derecha) para pausar/reanudar. Libera el player en
+`dispose()`. Todo el manejo de errores es vía `debugPrint` (no interrumpe la
+UI si el audio falla).
 
-### 16.4 `widgets/pitch_background.dart` — `PitchBackground`
+### 16.4 `widgets/lobby_music.dart` — `LobbyMusic`
+`StatefulWidget` "invisible" (`build()` devuelve `SizedBox.shrink()`, no
+pinta nada): su único trabajo es engancharse al ciclo de vida de
+`HomeScreen`. `initState()` llama `MusicService.instance.playLobby()`;
+`dispose()` llama `MusicService.instance.stopLobby()`. Documentado en
+detalle en [11.7](#117-servicesmusic_servicedart--musicservice).
+
+### 16.5 `widgets/match_music.dart` — `MatchMusic`
+Mismo patrón que `LobbyMusic` pero para `MatchScreen`: `initState()` llama
+`MusicService.instance.playMatch()`, `dispose()` llama
+`MusicService.instance.playLobby()` (vuelve a la música del lobby al salir
+del partido). También "invisible" (`SizedBox.shrink()`).
+
+### 16.6 `widgets/pitch_background.dart` — `PitchBackground`
 El widget más elaborado del proyecto en términos de animación custom.
 `StatefulWidget` con `SingleTickerProviderStateMixin`, usa un `Ticker`
 manual (`createTicker`) en vez de `AnimationController` porque la animación
@@ -1266,19 +1358,19 @@ fija:
 - `_sphere`: 12 vértices normalizados de un icosaedro (proporción áurea
   `phi`), reutilizados como posiciones de los "pentágonos" del balón.
 
-### 16.5 `widgets/player_list_row.dart` — `PlayerListRow` + `_PlayerAvatar`
+### 16.7 `widgets/player_list_row.dart` — `PlayerListRow` + `_PlayerAvatar`
 Fila reutilizable (banca, mercado, hoja de suplentes): avatar circular +
 nombre/subtítulo + chip de rating (dorado si ≥85, verde si no) + `trailing`
 opcional (p. ej. precio). Altura mínima 56 (buen tap target). `_PlayerAvatar`
 usa `Image.network` con `errorBuilder` que cae al ícono de persona genérico
 si la foto falta o no carga.
 
-### 16.6 `widgets/squad/average_rating_header.dart` — `AverageRatingHeader`
+### 16.8 `widgets/squad/average_rating_header.dart` — `AverageRatingHeader`
 Píldora con la valoración media del 11, redondeada, en color `pildora` con
 sombra — estilo "chemistry rating" de FUT. Se posiciona sobre la cancha en
 `SquadScreen`.
 
-### 16.7 `widgets/squad/formation_layout.dart`
+### 16.9 `widgets/squad/formation_layout.dart`
 - `FormationSlot(position, align)`: un puesto fijo en coordenadas
   fraccionales (`Alignment`, rango -1..1).
 - `kFormation433`: los 11 puestos del 4-3-3 en coordenadas normalizadas —
@@ -1292,7 +1384,7 @@ sombra — estilo "chemistry rating" de FUT. Se posiciona sobre la cancha en
   absoluto (`Alignment.withinRect(pitch)`) — resultado alineado índice a
   índice con `players`.
 
-### 16.8 `widgets/squad/pitch_geometry.dart`
+### 16.10 `widgets/squad/pitch_geometry.dart`
 - `kPitchAspect = 68/105` — proporción real de una cancha de fútbol
   (ancho/largo), en vertical.
 - `computePitchRect(size, {maxHeightFraction = 0.94})`: encaja un rectángulo
@@ -1300,14 +1392,14 @@ sombra — estilo "chemistry rating" de FUT. Se posiciona sobre la cancha en
   sin superar el `maxHeightFraction` del alto (para no invadir zonas
   seguras/encabezados).
 
-### 16.9 `widgets/squad/player_bench_sheet.dart` — `PlayerBenchSheet`
+### 16.11 `widgets/squad/player_bench_sheet.dart` — `PlayerBenchSheet`
 `StatelessWidget` — contenido del `showModalBottomSheet` de `SquadScreen`:
 handle superior, sección "TITULAR" (una `PlayerListRow` resaltada con el
 jugador actual), sección "BANCA · <línea>" con una `PlayerListRow` por
 suplente disponible (o un mensaje si no hay ninguno); tocar un suplente
 dispara `onSelectSubstitute`.
 
-### 16.10 `widgets/squad/player_card.dart` — `PlayerCard`
+### 16.12 `widgets/squad/player_card.dart` — `PlayerCard`
 La "carta" estilo FUT de un jugador. `width` la fija el layout de la cancha
 (deben caber 11 sin superponerse en cualquier tamaño de pantalla);
 `heightFor(width) = width * 1.62` (relación de aspecto fija).
@@ -1326,7 +1418,7 @@ Todos los tamaños de fuente/elementos internos se derivan proporcionalmente
 de `width` (con `.clamp(...)` para no quedar ilegibles en pantallas muy
 chicas o desbordar en muy grandes).
 
-### 16.11 `widgets/squad/squad_pitch_background.dart` — `SquadPitchBackground`
+### 16.13 `widgets/squad/squad_pitch_background.dart` — `SquadPitchBackground`
 Versión **estática** (sin `Ticker`, sin balón) de la cancha, pensada para ir
 detrás de las 11 cartas superpuestas de `SquadScreen` — por eso conviene que
 no repinte en cada frame. Dibuja cancha en **vertical** (arcos arriba y
@@ -1497,7 +1589,7 @@ Todos bajo `test/`, corridos con `flutter test`.
 | `market_flow_test.dart` | `visiblePlayers` filtra, ordena y excluye correctamente a los jugadores que ya son del club. |
 | `market_mapping_test.dart` | `Player.priceForRating` (curva convexa); `ApiFootballDatasource.mapApiPlayer` mapea un jugador válido, excluye los sin valoración, acota el rating a 1-100, asigna la posición por defecto de cada línea; `toJson`/`fromJson` hacen ida y vuelta sin pérdidas; una semilla sin precio deriva el precio de la valoración. |
 | `market_sell_flow_test.dart` | Flujo de venta del mercado (usa `market_test_helper.dart`). |
-| `widget_test.dart` | Smoke test: la app arranca en `LoginScreen` (aparece el título "Ultime Team Manager" y el botón "Entrar"). |
+| `widget_test.dart` | Smoke test: la app arranca en `LoginScreen` (aparece el título "Ultimate Team Manager" y el botón "Entrar"). |
 | `helpers/market_test_helper.dart` | No es un archivo de tests en sí: define `FakeMarketRepository` (repo en memoria, sin red) y `pumpMarket(tester)` (monta `MarketScreen` con Riverpod override), compartido por los tests de mercado. |
 
 ---
@@ -1586,7 +1678,23 @@ sorprenderse al seguir desarrollando:
    apuntan a las implementaciones `*Supabase`. Son el "modo offline" al que
    se podría volver cambiando una sola línea por provider, tal como describe
    la arquitectura por contratos del proyecto.
-6. **El package Dart sigue llamándose `contador_app`** (no
-   `ultime_team_manager`); el `README.md` menciona la intención de renombrarlo
-   pero no se hizo — todos los imports (`package:contador_app/...`) y el
-   `CounterScreen` heredado (no enrutado) son evidencia de ese origen.
+6. **El package Dart se llama `ultimate_team_manager`** (ya renombrado desde
+   el `contador_app` heredado del proyecto base). El único rastro visible de
+   ese origen que queda a propósito es `CounterScreen`
+   (`lib/presentation/screens/counter/counter_screen.dart`, con textos como
+   "Contador Matón"), conservada como referencia histórica pero **no
+   enrutada** — no aparece en `app_router.dart` y es inalcanzable desde la
+   navegación normal.
+7. **Varios tests dependen de `Supabase.instance` sin inicializarlo primero**
+   y fallan con `You must initialize the supabase instance before calling
+   Supabase.instance` al correr `flutter test` (verificado en este repo):
+   `test/widget_test.dart` (monta `MyApp()` completo, que arma
+   `AuthRepositorySupabase()` en `AuthController.build()`) y dos casos de
+   `test/market_flow_test.dart` / `test/market_sell_flow_test.dart` que
+   ejercitan `MarketController.buy`/`sell` (que tocan `coinsProvider` y
+   `SquadRepositorySupabase`, ambos con `Supabase.instance.client` directo,
+   sin pasar por una interfaz mockeable). Es deuda preexistente de cuando se
+   migró `auth`/`squad`/monedas a Supabase, no algo introducido por el
+   renombrado del paquete: a esos tests les falta un
+   `Supabase.initialize(...)` de prueba (o una capa de repositorio inyectable
+   que no dependa del singleton) antes de poder correr en CI.

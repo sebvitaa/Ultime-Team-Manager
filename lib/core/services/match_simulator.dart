@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:contador_app/domain/entities/match_event.dart';
-import 'package:contador_app/domain/entities/match_result.dart';
+import 'package:ultimate_team_manager/domain/entities/match_event.dart';
+import 'package:ultimate_team_manager/domain/entities/match_result.dart';
 
 /// Motor de simulación de partidos (RF5), **lógica pura y testeable** (sin UI).
 ///

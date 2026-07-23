@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/presentation/providers/auth_provider.dart';
-import 'package:contador_app/presentation/providers/match_provider.dart';
-import 'package:contador_app/presentation/widgets/coins_chip.dart';
-import 'package:contador_app/presentation/widgets/crest_logo.dart';
-import 'package:contador_app/presentation/widgets/lobby_music.dart';
+import 'package:ultimate_team_manager/config/theme/app_colors.dart';
+import 'package:ultimate_team_manager/presentation/providers/auth_provider.dart';
+import 'package:ultimate_team_manager/presentation/providers/match_provider.dart';
+import 'package:ultimate_team_manager/presentation/widgets/coins_chip.dart';
+import 'package:ultimate_team_manager/presentation/widgets/crest_logo.dart';
+import 'package:ultimate_team_manager/presentation/widgets/lobby_music.dart';
 
 /// Panel principal del club: escudo, saldo de monedas y accesos a las
 /// secciones (Plantilla, Mercado; Liga y Partido llegan más adelante).
@@ -39,7 +39,7 @@ class HomeScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Ultime Team Manager',
+                            'Ultimate Team Manager',
                             style: TextStyle(
                               color: AppColors.texto,
                               fontSize: 17,

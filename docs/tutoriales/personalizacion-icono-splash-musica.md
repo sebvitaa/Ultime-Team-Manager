@@ -1,6 +1,6 @@
 # Personalización: ícono, splash y música
 
-Tutorial específico para **Ultime Team Manager** (`contador_app`). Cubre tres cosas:
+Tutorial específico para **Ultimate Team Manager** (`ultimate_team_manager`). Cubre tres cosas:
 
 1. [Cambiar el ícono de la app](#1-cambiar-el-ícono-de-la-app)
 2. [Cambiar la pantalla de carga inicial (splash) en móviles](#2-cambiar-el-splash-pantalla-de-carga-inicial)
@@ -306,7 +306,7 @@ Crea un widget invisible que enciende la playlist mientras el lobby esté en pan
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:contador_app/data/services/music_service.dart';
+import 'package:ultimate_team_manager/data/services/music_service.dart';
 
 /// Enciende la playlist del lobby mientras esta pantalla esté montada.
 class LobbyMusic extends StatefulWidget {
@@ -369,7 +369,7 @@ por:
 Y agrega el import arriba:
 
 ```dart
-import 'package:contador_app/presentation/widgets/lobby_music.dart';
+import 'package:ultimate_team_manager/presentation/widgets/lobby_music.dart';
 ```
 
 ### 3.3 Partido: 2 canciones superpuestas
@@ -378,7 +378,7 @@ Widget análogo para el partido. Créalo en `lib/presentation/widgets/match_musi
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:contador_app/data/services/music_service.dart';
+import 'package:ultimate_team_manager/data/services/music_service.dart';
 
 /// Enciende las 2 pistas superpuestas del partido mientras dure la pantalla.
 /// Al terminar el partido (dispose), reanuda la música del lobby.
@@ -425,7 +425,7 @@ class _MatchMusicState extends State<MatchMusic> {
 Y el import:
 
 ```dart
-import 'package:contador_app/presentation/widgets/match_music.dart';
+import 'package:ultimate_team_manager/presentation/widgets/match_music.dart';
 ```
 
 ### 3.4 ¿Por qué no se superponen lobby y partido?

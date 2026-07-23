@@ -1,5 +1,5 @@
 -- ============================================================================
--- Ultime Team Manager — esquema inicial (Supabase: Postgres + Storage)
+-- Ultimate Team Manager — esquema inicial (Supabase: Postgres + Storage)
 --
 -- Correcciones aplicadas sobre el schema del TODO.md:
 --   1. Sin columna de password: la autenticación la maneja Supabase Auth

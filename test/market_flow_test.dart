@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/presentation/providers/coins_provider.dart';
-import 'package:contador_app/presentation/providers/market_provider.dart';
-import 'package:contador_app/presentation/providers/squad_provider.dart';
+import 'package:ultimate_team_manager/domain/entities/player.dart';
+import 'package:ultimate_team_manager/presentation/providers/coins_provider.dart';
+import 'package:ultimate_team_manager/presentation/providers/market_provider.dart';
+import 'package:ultimate_team_manager/presentation/providers/squad_provider.dart';
 
 import 'helpers/market_test_helper.dart';
 

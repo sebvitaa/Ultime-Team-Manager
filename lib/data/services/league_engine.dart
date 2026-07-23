@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:contador_app/core/services/match_simulator.dart';
-import 'package:contador_app/domain/entities/league_team.dart';
+import 'package:ultimate_team_manager/core/services/match_simulator.dart';
+import 'package:ultimate_team_manager/domain/entities/league_team.dart';
 
 /// Helpers puros de simulación para la liga (RF6). El marcador de cada partido
 /// sale del mismo modelo de goles por media que [MatchSimulator]; usados tanto

@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/domain/repositories/market_repository.dart';
+import 'package:ultimate_team_manager/domain/entities/player.dart';
+import 'package:ultimate_team_manager/domain/repositories/market_repository.dart';
 
 /// Cliente de API-Football v3 (api-sports.io). Plan gratuito: 100 peticiones
 /// al día y temporadas 2021-2023, por eso el repositorio cachea las

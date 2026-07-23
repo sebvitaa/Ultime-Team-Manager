@@ -1,6 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthException;
-import 'package:contador_app/domain/entities/app_user.dart';
-import 'package:contador_app/domain/repositories/auth_repository.dart';
+import 'package:ultimate_team_manager/domain/entities/app_user.dart';
+import 'package:ultimate_team_manager/domain/repositories/auth_repository.dart';
 
 /// Autenticación real con Supabase Auth. El perfil (`profiles`) se crea solo por
 /// un trigger en la base al registrarse (usa el `nombre_equipo`/`apodo` que se

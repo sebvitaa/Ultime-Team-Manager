@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/presentation/providers/auth_provider.dart';
-import 'package:contador_app/presentation/widgets/crest_logo.dart';
-import 'package:contador_app/presentation/widgets/intro_music.dart';
-import 'package:contador_app/presentation/widgets/pitch_background.dart';
+import 'package:ultimate_team_manager/config/theme/app_colors.dart';
+import 'package:ultimate_team_manager/presentation/providers/auth_provider.dart';
+import 'package:ultimate_team_manager/presentation/widgets/crest_logo.dart';
+import 'package:ultimate_team_manager/presentation/widgets/intro_music.dart';
+import 'package:ultimate_team_manager/presentation/widgets/pitch_background.dart';
 
 /// Pantalla de intro / login: tarjeta estilo EA FC sobre la cancha animada.
 class LoginScreen extends ConsumerStatefulWidget {
@@ -135,7 +135,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const CrestLogo(size: 66),
             const SizedBox(height: 14),
             const Text(
-              'Ultime Team\nManager',
+              'Ultimate Team\nManager',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.texto,

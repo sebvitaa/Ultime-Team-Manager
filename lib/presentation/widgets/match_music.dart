@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:contador_app/data/services/music_service.dart';
+import 'package:ultimate_team_manager/data/services/music_service.dart';
 
 /// Enciende las 2 pistas superpuestas del partido mientras dure la pantalla.
 /// Al terminar el partido (dispose), reanuda la música del lobby.

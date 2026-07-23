@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:contador_app/data/datasources/api_football_datasource.dart';
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/domain/repositories/market_repository.dart';
+import 'package:ultimate_team_manager/data/datasources/api_football_datasource.dart';
+import 'package:ultimate_team_manager/domain/entities/player.dart';
+import 'package:ultimate_team_manager/domain/repositories/market_repository.dart';
 
 /// Implementación del mercado contra API-Football, con caché local para
 /// respetar el límite de 100 peticiones/día: cada respuesta se guarda en

@@ -1,4 +1,4 @@
-package com.example.contador_app
+package com.example.ultimate_team_manager
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/presentation/providers/auth_provider.dart';
-import 'package:contador_app/presentation/screens/auth/login_screen.dart';
-import 'package:contador_app/presentation/screens/home/home_screen.dart';
-import 'package:contador_app/presentation/screens/league/league_screen.dart';
-import 'package:contador_app/presentation/screens/market/market_screen.dart';
-import 'package:contador_app/presentation/screens/match/match_screen.dart';
-import 'package:contador_app/presentation/screens/squad/squad_screen.dart';
+import 'package:ultimate_team_manager/config/theme/app_colors.dart';
+import 'package:ultimate_team_manager/presentation/providers/auth_provider.dart';
+import 'package:ultimate_team_manager/presentation/screens/auth/login_screen.dart';
+import 'package:ultimate_team_manager/presentation/screens/home/home_screen.dart';
+import 'package:ultimate_team_manager/presentation/screens/league/league_screen.dart';
+import 'package:ultimate_team_manager/presentation/screens/market/market_screen.dart';
+import 'package:ultimate_team_manager/presentation/screens/match/match_screen.dart';
+import 'package:ultimate_team_manager/presentation/screens/squad/squad_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   // Un notifier que "despierta" al router cuando cambia el estado de sesión.

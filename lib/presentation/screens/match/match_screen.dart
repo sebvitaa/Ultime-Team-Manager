@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/domain/entities/match_event.dart';
-import 'package:contador_app/presentation/providers/match_provider.dart';
-import 'package:contador_app/presentation/widgets/match_music.dart';
+import 'package:ultimate_team_manager/config/theme/app_colors.dart';
+import 'package:ultimate_team_manager/domain/entities/match_event.dart';
+import 'package:ultimate_team_manager/presentation/providers/match_provider.dart';
+import 'package:ultimate_team_manager/presentation/widgets/match_music.dart';
 
 /// Pantalla de partido (RF5): cara a cara en diagonal + cronómetro, marcador y
 /// relato en vivo, siguiendo el mockup `match-final-vs-comentarios.html`.

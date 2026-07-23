@@ -1,4 +1,4 @@
-import 'package:contador_app/domain/entities/league_team.dart';
+import 'package:ultimate_team_manager/domain/entities/league_team.dart';
 
 /// Fase actual de la liga.
 enum LeaguePhase { groups, quarters, semis, finalPhase, done }

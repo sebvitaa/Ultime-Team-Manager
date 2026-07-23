@@ -1,4 +1,4 @@
-import 'package:contador_app/domain/entities/squad.dart';
+import 'package:ultimate_team_manager/domain/entities/squad.dart';
 
 abstract class SquadRepository {
   Future<Squad> getSquad();

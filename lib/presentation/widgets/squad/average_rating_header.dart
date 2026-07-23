@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
+import 'package:ultimate_team_manager/config/theme/app_colors.dart';
 
 /// Píldora con la valoración media del 11, tipo "chemistry/rating" de FUT.
 class AverageRatingHeader extends StatelessWidget {

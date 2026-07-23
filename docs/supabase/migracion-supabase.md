@@ -1,6 +1,6 @@
 # Migración a Supabase
 
-Plan y esquema para migrar **Ultime Team Manager** de almacenamiento local
+Plan y esquema para migrar **Ultimate Team Manager** de almacenamiento local
 (SharedPreferences + assets) a **Supabase** (Postgres + Auth), con la clave de que
 **las llamadas a API-Football inyectan sus datos en Supabase** (no se consulta la API
 directo desde la UI; se persiste en la base y la app lee de ahí).

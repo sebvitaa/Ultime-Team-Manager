@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:contador_app/core/services/match_simulator.dart';
-import 'package:contador_app/domain/entities/match_event.dart';
+import 'package:ultimate_team_manager/core/services/match_simulator.dart';
+import 'package:ultimate_team_manager/domain/entities/match_event.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:contador_app/domain/entities/league_team.dart';
+import 'package:ultimate_team_manager/domain/entities/league_team.dart';
 
 /// Liga artificial: los 15 mejores clubes del mundo (principalmente Europa) con
 /// valoraciones **estimadas**. Son los rivales de la simulación de partidos.

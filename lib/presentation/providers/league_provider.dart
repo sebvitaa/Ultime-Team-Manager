@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:contador_app/data/league_teams.dart';
-import 'package:contador_app/data/services/league_engine.dart';
-import 'package:contador_app/domain/entities/league.dart';
-import 'package:contador_app/domain/entities/league_team.dart';
-import 'package:contador_app/presentation/providers/squad_provider.dart';
+import 'package:ultimate_team_manager/data/league_teams.dart';
+import 'package:ultimate_team_manager/data/services/league_engine.dart';
+import 'package:ultimate_team_manager/domain/entities/league.dart';
+import 'package:ultimate_team_manager/domain/entities/league_team.dart';
+import 'package:ultimate_team_manager/presentation/providers/squad_provider.dart';
 
 const _kUltime = 'Ultime FC';
 const _groupNames = ['A', 'B', 'C', 'D'];

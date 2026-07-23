@@ -8,7 +8,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:contador_app/main.dart';
+import 'package:ultimate_team_manager/main.dart';
 
 void main() {
   testWidgets('App boots into the login screen', (WidgetTester tester) async {
@@ -17,7 +17,7 @@ void main() {
     await tester.pump();
 
     // The router's initial route is '/login', so its title should show up.
-    expect(find.text('Ultime Team\nManager'), findsOneWidget);
+    expect(find.text('Ultimate Team\nManager'), findsOneWidget);
     expect(find.text('Entrar'), findsOneWidget);
   });
 }

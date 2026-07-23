@@ -1,4 +1,4 @@
-# Ultime Team Manager
+# Ultimate Team Manager
 
 Aplicación móvil tipo **FC Ultimate Team** desarrollada en **Flutter / Dart**. El
 jugador arma su equipo de 11 con cartas de futbolistas, opera en un mercado de
@@ -55,9 +55,6 @@ requisitos mínimos de la unidad:
 | Origen de cartas | **JSON semilla** en `assets/data` + **API pública de fútbol** (p. ej. TheSportsDB) | Datos offline y consumo de API para la Clase 3. |
 | Testing | **flutter_test** | Pruebas de widgets y de lógica. |
 | Linting | **flutter_lints** | Buenas prácticas (`analysis_options.yaml`). |
-
-> Nota: el `pubspec.yaml` todavía se llama `contador_app` (proyecto base). Se
-> renombrará a `ultime_team_manager` al integrar las dependencias anteriores.
 
 ---
 

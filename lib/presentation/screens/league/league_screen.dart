@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:contador_app/config/theme/app_colors.dart';
-import 'package:contador_app/domain/entities/league.dart';
-import 'package:contador_app/domain/entities/league_team.dart';
-import 'package:contador_app/presentation/providers/league_provider.dart';
-import 'package:contador_app/presentation/providers/match_provider.dart';
+import 'package:ultimate_team_manager/config/theme/app_colors.dart';
+import 'package:ultimate_team_manager/domain/entities/league.dart';
+import 'package:ultimate_team_manager/domain/entities/league_team.dart';
+import 'package:ultimate_team_manager/presentation/providers/league_provider.dart';
+import 'package:ultimate_team_manager/presentation/providers/match_provider.dart';
 
 const _kUltime = 'Ultime FC';
 const _maxW = 560.0;

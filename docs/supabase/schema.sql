@@ -1,5 +1,5 @@
 -- ============================================================================
---  Ultime Team Manager · Esquema de base de datos (Supabase / PostgreSQL)
+--  Ultimate Team Manager · Esquema de base de datos (Supabase / PostgreSQL)
 --  Aplícalo en Supabase → SQL Editor (una sola vez). Idempotente en lo posible.
 -- ============================================================================
 

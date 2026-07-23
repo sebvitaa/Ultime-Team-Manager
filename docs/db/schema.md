@@ -1,4 +1,4 @@
-# Base de datos — Ultime Team Manager
+# Base de datos — Ultimate Team Manager
 
 Esquema para **Supabase** (PostgreSQL + Storage), según el requerimiento
 `[BE] Base de datos` del TODO.md. Los scripts viven en:

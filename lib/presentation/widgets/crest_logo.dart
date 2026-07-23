@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Escudo/logo vectorial de "Ultime Team Manager" dibujado con [CustomPaint]
+/// Escudo/logo vectorial de "Ultimate Team Manager" dibujado con [CustomPaint]
 /// (sin emojis ni dependencias externas). Shield + balón lineal + monograma UTM.
 class CrestLogo extends StatelessWidget {
   final double size;

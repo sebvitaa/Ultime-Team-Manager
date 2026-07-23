@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:contador_app/core/services/match_simulator.dart';
-import 'package:contador_app/data/league_teams.dart';
-import 'package:contador_app/domain/entities/match_event.dart';
-import 'package:contador_app/domain/entities/match_result.dart';
-import 'package:contador_app/presentation/providers/coins_provider.dart';
-import 'package:contador_app/presentation/providers/league_provider.dart';
-import 'package:contador_app/presentation/providers/squad_provider.dart';
+import 'package:ultimate_team_manager/core/services/match_simulator.dart';
+import 'package:ultimate_team_manager/data/league_teams.dart';
+import 'package:ultimate_team_manager/domain/entities/match_event.dart';
+import 'package:ultimate_team_manager/domain/entities/match_result.dart';
+import 'package:ultimate_team_manager/presentation/providers/coins_provider.dart';
+import 'package:ultimate_team_manager/presentation/providers/league_provider.dart';
+import 'package:ultimate_team_manager/presentation/providers/squad_provider.dart';
 
 enum MatchPhase { playing, finished }
 

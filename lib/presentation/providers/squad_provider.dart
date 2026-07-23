@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:contador_app/domain/entities/player.dart';
-import 'package:contador_app/domain/entities/squad.dart';
-import 'package:contador_app/domain/repositories/squad_repository.dart';
-import 'package:contador_app/data/repositories/squad_repository_supabase.dart';
+import 'package:ultimate_team_manager/domain/entities/player.dart';
+import 'package:ultimate_team_manager/domain/entities/squad.dart';
+import 'package:ultimate_team_manager/domain/repositories/squad_repository.dart';
+import 'package:ultimate_team_manager/data/repositories/squad_repository_supabase.dart';
 
 // 1) Provider del repositorio: la plantilla vive en Supabase (user_jugadores).
 final squadRepositoryProvider = Provider<SquadRepository>((ref) {

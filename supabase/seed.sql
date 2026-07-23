@@ -1,5 +1,5 @@
 -- ============================================================================
--- Ultime Team Manager — datos semilla
+-- Ultimate Team Manager — datos semilla
 -- Idempotente: se puede ejecutar más de una vez sin duplicar filas.
 --
 -- Los 21 jugadores son los mismos de assets/data/squad.json (la plantilla

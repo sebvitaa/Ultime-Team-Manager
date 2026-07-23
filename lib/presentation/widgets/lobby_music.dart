@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:contador_app/data/services/music_service.dart';
+import 'package:ultimate_team_manager/data/services/music_service.dart';
 
 /// Enciende la playlist del lobby mientras esta pantalla esté montada.
 class LobbyMusic extends StatefulWidget {
